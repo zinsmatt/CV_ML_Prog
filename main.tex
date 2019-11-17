@@ -1,0 +1,46 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+
+\title{Tests}
+\author{loscmatt }
+\date{October 2019}
+
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
+
+\begin{document}
+
+\maketitle
+ 
+\tableofcontents
+ 
+\section{Introduction}
+Let ${}^{w}P_{l}$ be the pose of the lidar in the world coordinate system. This matrix maps points from the lidar coordinate system to the world. The same for the camera, with ${}^{w}P_{c}$ the pose of the camera in the world coordinate system.
+
+\bigskip
+You are looking for the transformation which maps points from the lidar coordinate system to the camera coordinate system. So, you just need to compose them correctly:
+
+${}^{c}P_{l} = {}^{c}P_{w} \; {}^{w}P_{l} = ({}^{w}P_{c})^{-1} \; {}^{w}P_{l} $
+
+\bigskip
+With this matrix you can then transform lidar points to the camera coordinates system:
+\begin{equation}
+X_{camera} = {}^{c}P_{l}\;X_{lidar} = {}^{c}P_{l}\;
+ \left[ 
+ \begin{array}{c}
+           x \\
+           y \\
+           z \\
+           1
+         \end{array}
+         \right]_{lidar}
+\end{equation}
+
+\include{vision}
+
+\end{document}

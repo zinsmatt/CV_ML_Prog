@@ -1,0 +1,327 @@
+\part{Vision}
+
+
+\section{Conics and quadrics}
+
+\subsection{Ellipses}
+The general quadratic equation of a conic is: $Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0 $
+
+It can be written in the homogeneous form:
+\begin{equation}
+(x~~y~~1) \left[\begin{array}{ccc}
+     A & B/2 & d/2  \\
+     B/2 & C & E/2 \\
+     D/2 & E/2 & F
+\end{array}\right] 
+\left( \begin{array}{c}
+     x  \\
+     y \\
+     1
+\end{array} \right)
+= 0
+\end{equation}
+In 2D projective geometry, all conics are equivalent under a projective transformation.
+
+An ellipse is a specific form of conic and has the equation:
+\begin{equation}
+\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1
+\end{equation}
+
+\subsubsection{Euclidean matrix form}
+\begin{equation}
+    (X - C)^T A (X - C) = 1
+\end{equation}
+$C$ is the ellipse center and $A$ is a 2x2 symmetric matrix defining its shape. The eigen vectors of $A$ are the two axes and their corresponding eigen values give $1/a^2$ and $1/b^2$.
+
+It is possible to extract the rotation part out of $A$:
+\begin{equation}
+(X - C)^T {}^{e}R_{w}^T \left[ \begin{array}{cc}
+    1/a^2 & 0 \\
+    0 & 1/b^2
+\end{array}
+\right] {}^{e}R_{w} (X - C) = 1
+\end{equation}
+
+\subsubsection{Homogeneous form}
+\begin{equation}
+    X^T T_{-C}^T
+    {}^{e}R_{w}^T
+    \left[ \begin{array}{ccc}
+    1/a^2 & 0 & 0\\
+    0 & 1/b^2 & 0\\
+    0 & 0 & -1
+    \end{array}\right]
+    {}^{e}R_{w}
+    T_{-C}
+    X = 0
+\end{equation}
+
+where $T_{-C} = \left[\begin{array}{ccc}
+    1&0&-C_x \\
+    0&1&-C_y \\
+    0&0&1
+    \end{array}\right]$ is a translation to move the ellipse center to~(0, 0).
+
+This gives a complete homogeneous equation:
+\begin{equation}
+    X^T C X = 0
+\end{equation}
+where $C$ is a 3x3 symmetric matrix defined up to a scale (6 elements for only 5 parameters because of the scale).
+
+\subsubsection{Dual form}
+It defines the ellipse by tangent lines instead of points. It satisfies:
+\begin{equation}
+    l^T C^* l = 0
+\end{equation}
+
+where $C^*$ is the adjointe matrix of $C$ and we have $C^* \sim C^{-1}$
+
+\subsubsection{Decompose an ellipse}
+This show how to decompose an ellipse into: half-axes, orientation and center.
+Input: $C$ the matrix of the dual conic
+
+\begin{enumerate}
+\item Normalize by minus the last element $C/-C[2, 2]$ to force C[2, 2] = -1
+\item $c = -C[:2, 2]$ is the center of the ellipse
+\item Apply translation of minus the center to get the ellipse centered. $C_{centered} = T_{-c} C T_{-c}^T $
+\item Enforce symmetry: $C_{centered} = 0.5 (C_{centered}+C_{centered}^T)$
+\item Compute eigen decomposition $D, R = eig(C_{centered}[:2, :2])$
+\item $a, b = sqrt(abs(D))$, $orientation = R$ and $center = c$
+\end{enumerate}
+
+\subsubsection{Fit an ellipse}
+An ellipse have 5 degrees of freedom (3x3 symmetric matrix: 6 parameters -1 for the scale).
+
+Each point gives one equation, so we need at least 5 points.
+\begin{equation}
+    \left[
+    \begin{array}{cccccc}
+    x_i^2 & x_i y_i & y_i^2 & x_i & y_i & 1  \\
+    \vdots &\vdots &\vdots &\vdots &\vdots &\vdots 
+    \end{array}
+    \right]
+    \left[\begin{array}{c}
+        a \\ b \\ c \\ d \\ e \\ f
+    \end{array} \right]
+    = 0
+\end{equation}
+
+solve this homogeneous system $Ax=0$ with SVD. The last row of $Vt$ gives the best estimation.
+
+
+\subsection{Ellipsoids}
+
+Ellipsoids are quadrics with the following type of equation:
+\begin{equation}
+    \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
+\end{equation}
+
+\subsubsection{Euclidean matrix form}
+Similar to the ellipse case, the general Euclidean form of an ellipsoid is:
+\begin{equation}
+    (X - C)^T A (X - C) = 1
+\end{equation}
+$C$ is the ellipse center and $A$ is a 3x3 symmetric matrix defining its shape. The eigen vectors of $A$ are the three axes and their corresponding eigen values give $1/a^2$, $1/b^2$ and $1/c^2$.
+
+Again, it is possible to extract the rotation out of $A$:
+
+\begin{equation}
+(X - C)^T {}^{e}R_{w}^T \left[ \begin{array}{ccc}
+    1/a^2 & 0 & 0 \\
+    0 & 1/b^2 & 0 \\
+    0 & 0 & 1/c^2
+\end{array}
+\right] {}^{e}R_{w} (X - C) = 1
+\end{equation}
+
+
+\subsubsection{Homogeneous form}
+\begin{equation}
+    X^T T_{-C}^T
+    {}^{e}R_{w}^T
+    \left[ \begin{array}{cccc}
+    1/a^2 & 0 & 0 & 0\\
+    0 & 1/b^2 & 0 & 0\\
+    0 & 0 & 1/c^2 & 0\\
+    0 & 0 & 0 & -1
+    \end{array}\right]
+    {}^{e}R_{w}
+    T_{-C}
+    X = 0
+\end{equation}
+
+where $T_{-C} = \left[\begin{array}{cccc}
+    1&0&0&-C_x \\
+    0&1&0&-C_y \\
+    0&0&1&-C_z \\
+    0&0&0&-1
+    \end{array}\right]$ is a translation to move the ellipsoid center to~(0, 0, 0).
+
+This gives a complete homogeneous equation:
+\begin{equation}
+    X^T Q X = 0
+\end{equation}
+
+where $Q$ is a 4x4 symmetric matrix defined up to a scale (10 elements for only 9 parameters because of the scale).
+
+\subsubsection{Dual form}
+It defines the ellipsoid by tangent planes instead of points. It satisfies:
+\begin{equation}
+    l^T Q^* l = 0
+\end{equation}
+
+where $Q^*$ is the adjointe matrix of $Q$ and we have $Q^* \sim Q^{-1}$
+
+
+\subsubsection{Decompose an ellipsoid}
+This show how to decompose an ellipsoid into: half-axes, orientation and center.
+Input: $Q$ the matrix of the dual quadric
+\begin{enumerate}
+\item Normalize by minus the last element $Q/-Q[3, 3]$ to force Q[3, 3] = -1
+\item $c = -Q[:3, 3]$ is the center of the ellipsoid
+\item Apply translation of minus the center to get the ellipsoid centered. $Q_{centered} = T_{-c} Q T_{-c}^T $
+\item Enforce symmetry: $Q_{centered} = 0.5 (Q_{centered}+Q_{centered}^T)$
+\item Compute eigen decomposition $D, R = eig(Q_{centered}[:3, :3])$
+\item $a, b, c = sqrt(abs(D))$, $orientation = R$ and $center = c$
+\end{enumerate}
+
+\section{2D Transformations}
+
+\begin{tabular}{|c|c|c|c|}
+ \hline
+  Transformation & degrees of freedom & matrix & invariants \\
+  \hline
+  Projective & 8 dof & 
+  $\left[\begin{array}{ccc}
+       h_{11}&h_{12}&h_{13}  \\
+       h_{21}&h_{22}&h_{23}  \\
+       h_{31}&h_{32}&h_{33}  \\
+    \end{array}\right]$ & 
+    \begin{minipage}[t]{0.4\textwidth}
+    \begin{itemize}
+        \item lines (collinearity)  
+        \item cross ratios (ratio of ratio)
+    \end{itemize}
+    \end{minipage}
+    \\
+    \hline
+    
+      Affine & 6 dof & 
+  $\left[\begin{array}{ccc}
+       a_{11}&a_{12}&t_{x}  \\
+       a_{21}&a_{22}&t_{y}  \\
+       0 & 0 & 1  \\
+    \end{array}\right]$ & 
+    \begin{minipage}[t]{0.4\textwidth}
+    \begin{itemize}
+        \item parallelism
+        \item centroid
+        \item line at infinity
+    \end{itemize}
+    \end{minipage}
+    \\
+    \hline
+    
+    Similarity & 4 dof & 
+  $\left[\begin{array}{ccc}
+       sr_{11}&sr_{12}&t_{x}  \\
+       sr_{21}&sr_{22}&t_{y}  \\
+       0 & 0 & 1  \\
+    \end{array}\right]$ & 
+    \begin{minipage}[t]{0.4\textwidth}
+    \begin{itemize}
+        \item angles
+        \item ratio of length
+        \item ratio of areas
+    \end{itemize}
+    \end{minipage}
+    \\
+    \hline
+    
+       Isometry (Euclidean) & 3 dof & 
+  $\left[\begin{array}{ccc}
+       r_{11}&r_{12}&t_{x}  \\
+       r_{21}&r_{22}&t_{y}  \\
+       0 & 0 & 1  \\
+    \end{array}\right]$ & 
+    \begin{minipage}[t]{0.4\textwidth}
+    \begin{itemize}
+        \item length
+        \item angles
+    \end{itemize}
+    \end{minipage}
+    \\
+    \hline
+\end{tabular}
+
+\textbf{\underline{Note:}}
+
+A similarity transform can be decomposed as a rotation $\theta$ and a non-uniform scaling $D$ with a certain orientation $\phi$:  $S = R(\theta)R(-\phi)DR(\phi)$
+
+The group of invertible nxn matrices is the \textit{General Linear Group}.
+
+The \textit{Projective Linear Group} is a subgroup of the matrices which are equivalent by a scalar factor.
+
+
+\subsection{Topology of the projective plane}
+Any point can be normalized such that: $x_1^2 + x_2^2 + x_3^2 = 1$.
+Such point lies on the unit sphere $S^2$ in $R^3$
+There is a 2-to-1 correspondence between $S^2$ and $P^2$.
+Opposite points on the sphere represent the same point. Any two points on the sphere lies on a single great circle which correspond to the line between the two points. Any two great circles intersect into a single points (in fact 2 opposite points which represent the same point).
+
+\subsubsection{Homogenous representation of points}
+The homogeneous representation of a point is :
+\begin{equation}
+    \textbf{p} \sim \left(\begin{array}{c}
+        \bar{p}\\1
+    \end{array}\right)
+    =
+    \left(\begin{array}{c}
+        x\\y\\1
+    \end{array}\right)
+\end{equation}
+
+\textbf{P-normalization}
+The mapping $R^2 \rightarrow P^2$ has an inverse mapping obtained by normalization.
+\begin{equation}
+    \textbf{x} = \left(\begin{array}{c}
+        x_1 \\ x_2 \\ x_3
+    \end{array}\right)
+\end{equation}
+and
+\begin{equation}
+    \textbf{x} \sim \left(\begin{array}{c}
+        x_1 / x_3 \\ x_2 / x_3 \\ 1
+    \end{array}\right)
+\end{equation}
+
+
+\subsubsection{Homogenous representation of lines}
+Equation of a line in 2D: $l_1x + l_2y - \Delta = 0$
+
+In homogeneous coordinates the line becomes:
+\begin{equation}
+    \textbf{l} \sim \left(\begin{array}{c}
+        l_1 \\ l_2 \\ -\Delta
+    \end{array}\right)
+\end{equation}
+In the canonical form, we assume $l_1^2 + l_2^2 = 1$ and $\Delta \ge 0$.
+The previous equation becomes: $x^Tl=0$.
+
+
+\textbf{D-normalization}
+\begin{equation}
+    \textbf{l} = \left(\begin{array}{c}
+        \beta_1 \\ \beta_2 \\ \beta_3
+    \end{array}\right)
+\end{equation}
+
+To go back to the canonical form, we do:
+\begin{equation}
+    \textbf{l}\sim \frac{-sign(\beta_3)}{\sqrt{\beta_1^2+\beta_2^2}} \left(\begin{array}{c}
+        \beta_1 \\ \beta_2 \\ \beta_3
+    \end{array}\right)
+    = \left(\begin{array}{c}
+        l_1 \\ l_2 \\ -\Delta
+    \end{array}\right)
+\end{equation}
