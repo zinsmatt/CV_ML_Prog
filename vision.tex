@@ -369,3 +369,62 @@ This also show that Euclidean distance and Mahalanobis distances are equivalent 
 \subsection{$\chi^2$ distribution}
 
 The $\chi_n^2$ distribution is the distribution of the sum of squares of $n$ independant Gaussian random variables. For a Gaussian random vector $v$, the value ${(v-\bar{v})^T \Sigma^{-1} (v-\bar{v})}$ satisfies a $\chi_n^2$ distribution, where $n$ is the dimension of $v$.
+
+
+
+\section{Algorithm evaluation and error analysis}
+\underline{Convention}
+$x$ represents a measured image point.
+Estimated quantities are represented with a hat, $\hat{x}$ or $\hat{H}$.
+True values are represented with a bar, $\bar{x}$ or $\bar{H}$.
+
+In the following subsections, we treat the problem of estimating a projective transformation between 2D points.
+
+\subsection{Error in one image}
+
+Suppose the points in the first image are noise-free $x_i = \bar{x}_i$ and points in the second image $x^\prime_i$ have a Gaussian noise. After estimating the transform $\hat{H}$, we can compute a \textit{residual error} which gives the average difference between the noisy input data $x^\prime_i$ and the 
+estimated points $\hat{x}^\prime_i = \hat{H}\bar{x}_i$
+
+\begin{equation}
+    \epsilon_{res} = \sqrt{\left( \frac{1}{2n}\sum_{i=1}^{n} d(x^\prime_i,\hat{x}^\prime_i)^2 \right)}
+\end{equation}{}
+
+In case of only 4 points, the estimated homography will perfectly fit the noisy input data and thus the residual error will be 0. However, this estimation will not be very close approximation to the noise-free values.
+With more than 4 points, the residual error will increase, but the estimated model will agree more and more with the noise-free true values.
+
+\subsection{Error in both images}
+In case of errors in both images, the residual error becomes
+
+\begin{equation}
+    \epsilon_{res} = \frac{1}{\sqrt{4n}} \sqrt{\sum_{i=1}^{n} d(x_i, \hat{x}_i)^2 + \sum_{i=1}^{n} d(x^\prime_i, \hat{x}^\prime_i)^2}
+\end{equation}{}
+
+where $\hat{x}_i$ and $\hat{x}_i^\prime$ are estimated points such that $\hat{x}_i = \hat{H} \hat{x}_i^\prime$.
+
+
+\subsection{Optimal estimators (MLE)}
+Maximum Likelyhood Estimator (MLE) gives a theoretical optimal solution and any other algorithm should be compared to it.
+A general estimation problem is with function $f$ from $R^M$ to $R^N$ where $R^M$ is a parameter space and $R^N$ is a space of measurements. Consider a point $\bar{X}$ from the measurement space for which there exists a point $\bar{P}$ in the parameters space such that $f(\bar{P}) = \bar{X}$. In case of homography between 2 sets of $n$ points, $\bar{X}$ contains its $N=2n$ coordinates and $\bar{P}$ contains the 8 or 9 parameters of the homography.
+
+Let $X$ be a measurement chosen according to an isotropic Gaussian distribution of mean $\bar{X}$ and total variance $N\sigma^2$ (this is the sum of the variance of each component = trace of the covariance matrix).
+
+\includegraphics[scale=0.25]{content/MLE.png}
+
+As the value of the parameter vector $P$ varies in a neighbourhood of $\bar{P}$, the values of $f(P)$ traces out a surface $S_m$ in $R^N$ through point $\bar{X}$. This surface is a sub-manifold of $R^N$ and has dimension $d$, the number of essential parameters (= nb of degrees of freedom or minimum number of parameters). The ML estimate $\hat{X}$ is the point on the curve which is the closest to the measurement point $X$.
+
+If we assume that in a neighbourhood of $\bar{X}$, the surface is planar, this ML estimate is the orthogonal projection of $X$ onto the plane.
+The residual error corresponds to the distance between $X$ and $\hat{X}$. Its distribution is the projection of the distribution of the Gaussian distribution variable on the $N-d$-dimensional normal of the plane.
+The estimator error corresponds to the distance between $\bar{X}$ and $\hat{X}$. Its distribution is projection of the distribution of the Gaussian random variable onto the $d$-dimensional plane.
+
+With this its possible to compute the \textbf{expected residual errors} and the \textbf{expected estimator error}.
+
+\subsection{Covariance of the estimation}
+
+We saw in the previous subsection that the achievable residual error and estimation error depends only on the number of points correspondence and their accuracy. However, the confidence of the estimation (its covariance) depends also on the configuration off the points. For example, if we take 4 points almost collinear, the behaviour of the transformation along the perpendicular dimension cannot be accurately estimated. This uncertainty is captured in the \textit{covariance matrix}.
+
+\subsubsection{Forward propagation of covariance (linear case)}
+
+Let $v$ be a random vector in $R^M$ with mean $\bar{v}$ and covariance matrix $\Sigma$ and suppose that $f : R^M \rightarrow R^N$ is an affine matrix defined by $f(v) = f(\bar{v}) + A(v - \bar{v})$.
+Then $f(v)$ is a random variable with mean $f(\bar{v})$ and covariance matrix $A\Sigma A^T$.
+
+
