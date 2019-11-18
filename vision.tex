@@ -325,3 +325,47 @@ To go back to the canonical form, we do:
         l_1 \\ l_2 \\ -\Delta
     \end{array}\right)
 \end{equation}
+
+
+
+\section{Gaussian and $\chi^2$ distributions}
+\subsubsection{Gaussian probability distribution}
+Given a vector $X$ of random variables $x_i$ for $i=1,\dots,N$, with mean $\bar{X} = E[X]$, and $\Delta_X = X - \bar{X}$, the covariance matrix $\Sigma$ is a NxN matrix given by
+
+\begin{equation}
+    \Sigma = E[\Delta_X \Delta_X^T]
+\end{equation}
+
+so that $\Sigma_{ij}=E[\Delta_{x_i}\Delta_{y_i}]$. The diagonal elements of $\Sigma$ are the variances of the individual variables $x_i$, and the off-diagonal elements are the cross-variances values.
+In non-degenerate cases, where $\Sigma$ is positive-definite and thus invertible, the multivariate Gaussian distribution is
+\begin{equation}
+P(X)=\frac{1}{(2\pi)^{N/2}|\Sigma|^{1/2}} e^{-\frac{1}{2}(X-\bar{X})^T \Sigma^{-1} (X-\bar{X})}
+\end{equation}
+
+where $|\Sigma|$ is the determinant of $\Sigma$.
+
+In the case where $\Sigma$ is just a diagonal matrix with a unique scalar term on the diagonal, $\Sigma=\sigma^2 I$, the distribution is called an \textit{isotropic Gaussian distribution}.
+
+\subsubsection{Mahalanobis distance}
+
+It is defined as:
+\begin{equation}
+    \norm{X - Y}_{Sigma}=\sqrt{(X-Y)^T \Sigma^{-1} (X-Y)}
+\end{equation}{}
+
+where $\Sigma$ is a positive definite matrix. This defines a metrix on $R^N$.
+We can see that the Gaussian distribution is equivalent (without the normalization terms) to 
+
+\begin{equation}
+    P(X) \approx e^{-\frac{\norm{X-\bar{X}}_{\Sigma}^{2}}{2}}
+\end{equation}{}
+
+\subsubsection{Change of coordinates}
+Since $\Sigma$ is symmetric and positive-definite, it may be rewritten as $\Sigma=U^T D U$, where $U$ is an orthogonal matrix and $D=(\sigma_1^2, \sigma_2^2, \dots, \sigma_N^2)$ is diagonal.
+
+This shows that a general Gaussian PDF can be changed into an \textit{isotropic Gaussian distribution} with an orthogonal change of coordinates $X^\prime = UX$ and a scaling $\sigma_i$ of each component.
+This also show that Euclidean distance and Mahalanobis distances are equivalent under a change of coordinates.
+
+\subsection{$\chi^2$ distribution}
+
+The $\chi_n^2$ distribution is the distribution of the sum of squares of $n$ independant Gaussian random variables. For a Gaussian random vector $v$, the value ${(v-\bar{v})^T \Sigma^{-1} (v-\bar{v})}$ satisfies a $\chi_n^2$ distribution, where $n$ is the dimension of $v$.
