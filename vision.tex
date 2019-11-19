@@ -434,4 +434,21 @@ We saw in the previous subsection that the achievable residual error and estimat
 Let $v$ be a random vector in $R^M$ with mean $\bar{v}$ and covariance matrix $\Sigma$ and suppose that $f : R^M \rightarrow R^N$ is an affine matrix defined by $f(v) = f(\bar{v}) + A(v - \bar{v})$.
 Then $f(v)$ is a random variable with mean $f(\bar{v})$ and covariance matrix $A\Sigma A^T$.
 
+\subsubsection{Forward propagation of covariance (non-linear case)}
 
+If $f$ is non-linear, we can compute an approximation to the mean and covariance of $f(v)$ by assuming that $f$ is approximately affine in the neighbourhood of $\bar{v}$.
+
+The affine approximation of $f$ is $f(v) \approx f(\bar{v}) + J(v-\bar{v})$,
+where $J$ is the partial derivative (Jacobian) matrix $\frac{\delta f}{\delta v}$ evaluated in $\bar{v}$.
+
+With this first-order approximation, $f(v)$ has
+
+\begin{equation}
+mean = f(\bar{v})
+\end{equation}
+\begin{equation}
+covariance = J\Sigma J^T
+\end{equation}
+
+
+The quality of these approximation of mean and covariance depends on how good the linear approximation is.
