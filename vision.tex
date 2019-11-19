@@ -410,7 +410,7 @@ where $\hat{x}_i$ and $\hat{x}_i^\prime$ are estimated points such that $\hat{x}
 
 
 \subsection{Optimal estimators (MLE)}
-Maximum Likelyhood Estimator (MLE) gives a theoretical optimal solution and any other algorithm should be compared to it.
+Maximum Likelihood Estimator (MLE) gives a theoretical optimal solution and any other algorithm should be compared to it.
 A general estimation problem is with function $f$ from $R^M$ to $R^N$ where $R^M$ is a parameter space and $R^N$ is a space of measurements. Consider a point $\bar{X}$ from the measurement space for which there exists a point $\bar{P}$ in the parameters space such that $f(\bar{P}) = \bar{X}$. In case of homography between 2 sets of $n$ points, $\bar{X}$ contains its $N=2n$ coordinates and $\bar{P}$ contains the 8 or 9 parameters of the homography.
 
 Let $X$ be a measurement chosen according to an isotropic Gaussian distribution of mean $\bar{X}$ and total variance $N\sigma^2$ (this is the sum of the variance of each component = trace of the covariance matrix).
@@ -425,7 +425,7 @@ The estimator error corresponds to the distance between $\bar{X}$ and $\hat{X}$.
 
 With this its possible to compute the \textbf{expected residual errors} and the \textbf{expected estimator error}.
 
-\subsection{Covariance of the estimation}
+\subsection{Covariance of estimation}
 
 We saw in the previous subsection that the achievable residual error and estimation error depends only on the number of points correspondence and their accuracy. However, the confidence of the estimation (its covariance) depends also on the configuration off the points. For example, if we take 4 points almost collinear, the behaviour of the transformation along the perpendicular dimension cannot be accurately estimated. This uncertainty is captured in the \textit{covariance matrix}.
 
@@ -452,3 +452,58 @@ covariance = J\Sigma J^T
 
 
 The quality of these approximation of mean and covariance depends on how good the linear approximation is.
+
+
+\subsubsection{Backward propagation of covariance}
+
+Consider a differentiable mapping $f$ from a \textit{parameter space} $R^M$ to a \textit{measurement space} $R^N$. Let $S_M$ be the image of mapping $f$. We consider $M\le N$ and that $S_M$ has the same dimension $M$ as the parameter space $R^M$.
+
+Finding the closest point in Mahalanobis distance on the surface $S_M$ to a given point $X$ in $R^2$ defines a mapping $\eta : R^N \rightarrow S_M$.
+The mapping $f$ is invertible by assumption.
+So, by composing $f^{-1} \circ \eta : R^N \rightarrow R^M$ we get a mapping from a measurement $X$ to its corresponding parameters $P$ Maximum Likelihood estimate of $\hat{x}$.
+
+Our goal is to backpropagate the covariance of the probability distribution in the measurement space $R^N$ to compute the covariance matrix of the parameters.
+
+\paragraph{Affine case}
+Let $f$ be the affine mapping $f(P) = f(\bar{P}) + J(P-\bar{P})$ where $J$ has rank $M$. Let $X$ be a random variable measurement in $R^N$ with mean $\bar{X}=f(\bar{P})$ and covariance matrix $\Sigma$. Let $f^{-1} \circ \eta: R^N \rightarrow R^M$ be the mapping that maps a measurement $X$ to the set of parameters corresponding to the ML estimate of $\hat{x}$. Then $\hat{P}=f^{-1} \circ \eta(X)$ is a random variable with mean $\bar{P}$ and covariance
+\begin{equation}
+    \Sigma_P = (J^T \Sigma_X^{-1} J)^{-1}
+\end{equation}
+
+\paragraph{Non-linear case}
+If $f$ is non-linear, it can be approximated by an affine mapping. Suppose its Jacobian $J$ has rank M, then $f$ is a one-to-one mapping in the neighbourhood of $\bar{P}$. Then, to the first order, $\hat{P} = f^{-1} \circ \eta(X)$ is a random variable with mean $\bar{P}$ and covariance
+\begin{equation}
+    \Sigma_P = (J^T \Sigma_X^{-1}J)^{-1}
+\end{equation}{}
+
+
+
+\paragraph{Over-parameterized case}
+In this case some parameters are redundant and thus $f$ is non locally one-to-one. For example, in the case of homography parameterized with a 9-vector, the parameters can be multiplied by any scalar. 
+
+In particular, the Jacobian has not full rank. Usually it has rank $d < M$ and this $J^T\Sigma_X^{-1}J$ is not invertible.
+
+Without further restriction, the parameters can vary without bound and have infinite variance.
+Usual constraints are: $\norm{P} = 1$ or $P_m = 1$ (last element of $P$).
+In these cases, the parameter vector $P$ is constraint to lie on a submanifold (surface) of $R^M$: unit sphere and plane.
+
+Let $S_P$ be this smooth manifold of dimension $d$ embedded in $R^M$ passing through $\bar{P}$ and such that the mapping $f$ is one-to-one. $f$ maps $S_P$ to $f(S_P)$ in $R^N$. This mapping has a local inverse $f^{-1}$ restricted to the surface $f(S_P)$.
+The mapping that maps a measurement $X$ to $S_P$ is now : $\eta: R^N \rightarrow f(S_P)$. The back-propagation is done with: $f^{-1} \circ \eta$ and the covariance becomes
+\begin{equation}
+    \Sigma_P = (J^T\Sigma_P^{-1}J)^{+A} = A(A^T J^T \Sigma_X^{-1} JA)^{-1}A^T
+\end{equation}
+where $A$ is a $M\times d$ matrix whose columns span the tangent space to $S_P$ at $\bar{P}$
+
+\subsubsection{Using the covariance matrix for point transfer}
+Once we have the covariance matrix of our estimated parameters, we can use it to transfer uncertainty of a point transformed with the function $x^\prime = Hx$.
+Let $x$ be our initial point with covariance $\Sigma_X$. 
+The covariance matrix of $x^\prime$ is
+\begin{equation}
+    \Sigma_{x^\prime} = J_h\Sigma_hJ_h^T + J_x\Sigma_xJ_x^T
+\end{equation}
+
+The covariance of the parameters and the covariance of the point itself are propagated.
+
+\subsection{Monte Carlo estimation of covariance}
+The methods in the previous section are based on the fact that the surface $f(h)$ is locally flat in the neighbourhood of the estimated point.
+Monte Carlo method is more general but quite expensive. It consists of estimating the covariance by exhaustive simulation. We generate noise from a chosen distribution, apply it to our measurements and estimate $h$. We can then estimate the covariance of $h$ statistically.
