@@ -78,16 +78,19 @@ where $C^*$ is the adjointe matrix of $C$ and we have $C^* \sim C^{-1}$
 
 \subsubsection{Decompose an ellipse}
 This show how to decompose an ellipse into: half-axes, orientation and center.
-Input: $C$ the matrix of the dual conic
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwInput{$C$: dual-form 3x3 matrix of the ellipse}
+\KwOutput{half-axes, orientation, center}
+ $C/-C[2, 2]$ \tcp*{normalize by minus C[2, 2] (force C[2, 2] = -1)}
+ $c = -C[:2, 2]$  \tcp*{is the center of the ellipse}
+ $C_{centered} = T_{-c} C T_{-c}^T $ \tcp*{Get the ellipsoid centered}
+ $C_{centered} = 0.5\times(C_{centered}+C_{centered}^T)$ \tcp*{Enforce symmetry}
+ $D, R = eig(C_{centered}[:2, :2])$ \tcp*{Eigen decomposition}
+ $a, b = sqrt(abs(D))$, $orientation = R$, $center = c$
+\caption{Decompose ellipse}
+\end{algorithm}
 
-\begin{enumerate}
-\item Normalize by minus the last element $C/-C[2, 2]$ to force C[2, 2] = -1
-\item $c = -C[:2, 2]$ is the center of the ellipse
-\item Apply translation of minus the center to get the ellipse centered. $C_{centered} = T_{-c} C T_{-c}^T $
-\item Enforce symmetry: $C_{centered} = 0.5 (C_{centered}+C_{centered}^T)$
-\item Compute eigen decomposition $D, R = eig(C_{centered}[:2, :2])$
-\item $a, b = sqrt(abs(D))$, $orientation = R$ and $center = c$
-\end{enumerate}
 
 \subsubsection{Fit an ellipse}
 An ellipse have 5 degrees of freedom (3x3 symmetric matrix: 6 parameters -1 for the scale).
@@ -175,15 +178,19 @@ where $Q^*$ is the adjointe matrix of $Q$ and we have $Q^* \sim Q^{-1}$
 
 \subsubsection{Decompose an ellipsoid}
 This show how to decompose an ellipsoid into: half-axes, orientation and center.
-Input: $Q$ the matrix of the dual quadric
-\begin{enumerate}
-\item Normalize by minus the last element $Q/-Q[3, 3]$ to force Q[3, 3] = -1
-\item $c = -Q[:3, 3]$ is the center of the ellipsoid
-\item Apply translation of minus the center to get the ellipsoid centered. $Q_{centered} = T_{-c} Q T_{-c}^T $
-\item Enforce symmetry: $Q_{centered} = 0.5 (Q_{centered}+Q_{centered}^T)$
-\item Compute eigen decomposition $D, R = eig(Q_{centered}[:3, :3])$
-\item $a, b, c = sqrt(abs(D))$, $orientation = R$ and $center = c$
-\end{enumerate}
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwInput{$Q$: dual-form 4x4 matrix of the ellipsoid}
+\KwOutput{half-axes, orientation, center}
+ $Q/-Q[3, 3]$ \tcp*{normalize by minus Q[3, 3] (force Q[3, 3] = -1)}
+ $c = -Q[:3, 3]$  \tcp*{is the center of the ellipsoid}
+ $Q_{centered} = T_{-c} Q T_{-c}^T $ \tcp*{Get the ellipsoid centered}
+ $Q_{centered} = 0.5\times(Q_{centered}+Q_{centered}^T)$ \tcp*{Enforce symmetry}
+ $D, R = eig(Q_{centered}[:3, :3])$ \tcp*{Eigen decomposition}
+ $a, b, c = sqrt(abs(D))$, $orientation = R$, $center = c$
+\caption{Decompose ellipsoid}
+\end{algorithm}
 
 \section{2D Transformations}
 
