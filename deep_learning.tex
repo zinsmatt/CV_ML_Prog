@@ -9,11 +9,12 @@ Basic idea for the Yolo (v1, v2, v3) object detection algorithm.
 \KwInput{Input image}
 \KwOutput{a set of bounding boxes with confidence and label}
  Divide the image in a $S\times S$ grid. \\
- In each cell predict: \\
- \Indp - B boxes ($c_x, c_y, w, h$ for eahc anchor box) \\
+\For{each cell}
+  { predict: \\
+  - B boxes ($c_x, c_y, w, h$ for each anchor box) \\
   - B confidence values (the confidence should be equal to $Pr(Object) \times IoU$, if there is no object in the cell it should be 0 and if there is if should be equal to the IoU with its bbox) \\
-  - C class conditional probabilities ($Pr(class_i|Object$) \\
- \Indm The final tensor is $S\times S \times (B \times 5 + C)$ \\
+  - C class conditional probabilities ($Pr(class_i|Object$) \\}
+ The final tensor is $S\times S \times (B \times 5 + C)$ \\
  Threshold and apply non-maximum suppression
 \caption{Yolo}
 \end{algorithm}
@@ -29,9 +30,13 @@ Basic idea for the Mask R-CNN object detection and segmentation
  Apply the \textit{backbone} network to compute feature maps \\
  Apply the RPN (Region Proposal Network) that outputs candidate RoI (objectness scores + box coordinates) \\
  Apply Fast R-CNN on each RoI with an additional branch for the mask:\\
- \Indp - classification: a set of class scores  \\
+ \For{each RoI}
+ {
+  apply Fast R-CNN with an additional branch for the mask: \\
+ - classification: a set of class scores  \\
  - bbox regression: per-class bbox offsets \\
  - mask prediction: one binary mask per class \tcp*{only the mask corresponding to the true class is used during training}
+ }
  \caption{Mask R-CNN}
 \end{algorithm}
 

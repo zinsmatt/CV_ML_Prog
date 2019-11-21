@@ -74,7 +74,7 @@ It defines the ellipse by tangent lines instead of points. It satisfies:
     l^T C^* l = 0
 \end{equation}
 
-where $C^*$ is the adjointe matrix of $C$ and we have $C^* \sim C^{-1}$
+where $C^*$ is the adjointe matrix (conjugate transpose) of $C$ and we have $C^* \sim C^{-1}$
 
 \subsubsection{Decompose an ellipse}
 This show how to decompose an ellipse into: half-axes, orientation and center.
@@ -173,7 +173,7 @@ It defines the ellipsoid by tangent planes instead of points. It satisfies:
     l^T Q^* l = 0
 \end{equation}
 
-where $Q^*$ is the adjointe matrix of $Q$ and we have $Q^* \sim Q^{-1}$
+where $Q^*$ is the adjointe matrix (conjugate transpose) of $Q$ and we have $Q^* \sim Q^{-1}$
 
 
 \subsubsection{Decompose an ellipsoid}
@@ -266,6 +266,8 @@ This show how to decompose an ellipsoid into: half-axes, orientation and center.
 A similarity transform can be decomposed as a rotation $\theta$ and a non-uniform scaling $D$ with a certain orientation $\phi$:  $S = R(\theta)R(-\phi)DR(\phi)$
 
 The group of invertible nxn matrices is the \textit{General Linear Group}.
+
+The projective transform is the only kind of transform that can move points at infinity to finite points or vice versa.
 
 The \textit{Projective Linear Group} is a subgroup of the matrices which are equivalent by a scalar factor.
 
@@ -507,3 +509,22 @@ The covariance of the parameters and the covariance of the point itself are prop
 \subsection{Monte Carlo estimation of covariance}
 The methods in the previous section are based on the fact that the surface $f(h)$ is locally flat in the neighbourhood of the estimated point.
 Monte Carlo method is more general but quite expensive. It consists of estimating the covariance by exhaustive simulation. We generate noise from a chosen distribution, apply it to our measurements and estimate $h$. We can then estimate the covariance of $h$ statistically.
+
+
+\section{Multi-view reconstruction}
+
+\subsection{Triangulation}
+
+When we observe points correspondences in images they are assumed to be the projections of 3D points defined in a certain coordinates system. We can assume that a well-defined Cartesian coordinate system of 3D space exists and we refer it as "true" world coordinate system. 
+In case our cameras are completely calibrated, it is possible to reconstruct the "true" 3D coordinates of a points. However, this is rarely the case in practice. In fact, it is possible to reconstruct 3D coordinates that we can then correct with an unknown transformation to get the "true" coordinates. Depending on the character of this transformation, we get different type of reconstruction:
+
+\paragraph{Euclidean reconstruction}
+This is the optimal case, where the cameras are fully calibrated (we known their internal parameters and poses). In this case, we can reconstruct 3D points in a coordinate system that is rigidly transformed (rotation + translation) relative to the "true" world coordinate system.
+
+\paragraph{Similarity reconstruction}
+This case is more frequent in practice, where we known the relative pose between the cameras but only up to an unknown scaling of the translation. This unknown scale can be resolved by setting some 3D distance to unit length (for example the distance between the cameras).
+The final reconstruction will differ from the "true" reconstruction by a \textit{similarity transform} (scaling + rotation + translation).
+
+\paragraph{Projective reconstruction}
+In case of uncalibrated epipolar geometry, the fundamental matrix between the two views can be calculated but the corresponding camera matrices will be determined up to an unknown homography transform of the 3D space. This means the reconstruction will be done in a coordinate system that is transform by an unknown projective transformation from the "true" coordinate system. This means the reconstruction will be deformed in: angles, volumes, parallelism, ...
+This is a problem if we are interested in the quality of the reconstruction. If we only care about the projection of 3D points in 2 or more cameras, the specific coordinate system is of no importance, as long as each camera matrices refer to the same coordinate system.
