@@ -9,7 +9,7 @@ The general quadratic equation of a conic is: $Ax^2 + Bxy + Cy^2 + Dx + Ey + F =
 It can be written in the homogeneous form:
 \begin{equation}
 (x~~y~~1) \left[\begin{array}{ccc}
-     A & B/2 & d/2  \\
+     A & B/2 & D/2  \\
      B/2 & C & E/2 \\
      D/2 & E/2 & F
 \end{array}\right] 
@@ -92,7 +92,22 @@ This show how to decompose an ellipse into: half-axes, orientation and center.
 \end{algorithm}
 
 
-\subsubsection{Fit an ellipse}
+\subsubsection{Fitting an ellipse}
+see \href{https://members.loria.fr/MOBerger/Enseignement/Master2/Documents/ZhangIVC-97-01.pdf}{Zhang}
+
+\paragraph{Least-squares fitting based on algebraic distance}
+
+This is the easiest way to fit an ellipse because it has closed-form solution. With ideal points, we would like to have the \textit{algebraic distance} equal to 0: $Q(x_i, y_i) =  Ax_i^2 + Bx_iy_i + Cy_i^2 + Dx_i + Ey_i + F = 0$.
+Because of noise, this equation is not true, so we want to minimize the following \textit{objective function}.
+
+\begin{equation}
+    F = \sum_{i=1}^{n} Q^2(x_i, y_i)
+\end{equation}
+
+Clearly, there is a trivial solution: $A=B=C=D=E=F=0$. Let $p = [A, B, C, D, E, F]^T$. To avoid the trivial solution, we need to normalize $p$. Different normalization are possible: $\norm{p} = 1$, $A + C = 1$, $F = 1$.
+
+\paragraph{Normalization: $\norm{p}=1$}
+
 An ellipse have 5 degrees of freedom (3x3 symmetric matrix: 6 parameters -1 for the scale).
 
 Each point gives one equation, so we need at least 5 points.
@@ -111,6 +126,42 @@ Each point gives one equation, so we need at least 5 points.
 
 solve this homogeneous system $Ax=0$ with SVD. The last row of $Vt$ gives the best estimation.
 
+\paragraph{Normalization: $A + C = 1$}
+The trace of the conic matrix $A + C$ can never be 0, so we can force $A + C = 1$.
+With this normalization, all ellipses can be expressed by 5 parameters: $p = [A, B, D, E, F]^T$. So, we minimize $\norm{Ap-b}$,
+
+\begin{equation}
+    \left[
+    \begin{array}{ccccc}
+    x_i^2 - y_i^2 & x_i y_i & x_i & y_i & 1  \\
+    \vdots &\vdots &\vdots &\vdots &\vdots 
+    \end{array}
+    \right]
+    \left[\begin{array}{c}
+        a \\ b \\ d \\ e \\ f
+    \end{array} \right]
+     - 
+    \left[\begin{array}{c}
+        -y_i \\
+        \vdots
+    \end{array} \right]
+\end{equation}
+
+
+The solution to $Ap=b$ is given by the \textit{pseudo-inverse}: $p = (A^T A)^{-1} A^T b$
+
+
+\paragraph{Normalization: $F = 1$}
+This is another used normalization. However, this normalization has singularities for all conics going through the origin because $F = 0$.
+
+
+\paragraph{Least-squares fitting based on Euclidean distance}
+
+The methods based on algebraic distance have the advantage of begin simple and having closed-form solution. However, they introduce a bias where points on regions of high curvature have less impact than points on regions of low curvature.
+
+Methods based on Euclidean distance are better but are based on the minimization of an orthogonal distance to the ellipse which is complicated to compute and requires iterative methods for minimization.
+
+
 
 \subsection{Ellipsoids}
 
@@ -118,6 +169,7 @@ Ellipsoids are quadrics with the following type of equation:
 \begin{equation}
     \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
 \end{equation}
+
 
 \subsubsection{Euclidean matrix form}
 Similar to the ellipse case, the general Euclidean form of an ellipsoid is:
@@ -223,7 +275,7 @@ This show how to decompose an ellipsoid into: half-axes, orientation and center.
     \begin{itemize}
         \item parallelism
         \item centroid
-        \item line at infinity
+        \item line/point at infinity
     \end{itemize}
     \end{minipage}
     \\
@@ -267,7 +319,7 @@ A similarity transform can be decomposed as a rotation $\theta$ and a non-unifor
 
 The group of invertible nxn matrices is the \textit{General Linear Group}.
 
-The projective transform is the only kind of transform that can move points at infinity to finite points or vice versa.
+The projective transform is the only kind of transform that can move points/lines at infinity to finite points/lines or vice versa.
 
 The \textit{Projective Linear Group} is a subgroup of the matrices which are equivalent by a scalar factor.
 
@@ -511,6 +563,105 @@ The methods in the previous section are based on the fact that the surface $f(h)
 Monte Carlo method is more general but quite expensive. It consists of estimating the covariance by exhaustive simulation. We generate noise from a chosen distribution, apply it to our measurements and estimate $h$. We can then estimate the covariance of $h$ statistically.
 
 
+\subsection{Uncertainty ellipse from covariance matrix}
+
+Here we show how to get the ellipse corresponding to the uncertainty of a specific covariance.
+
+The covariance matrix is:
+\begin{equation}
+    cov = \left[\begin{array}{cc}
+        \sigma_x^2 & 0 \\
+        0 & \sigma_y^2
+    \end{array}\right]
+\end{equation}
+
+This corresponds to the \textbf{dual-form} matrix of the ellipse of uncertainties. The \textbf{primal-form} matrix is
+
+\begin{equation}
+    cov = \left[\begin{array}{cc}
+        1/\sigma_x^2 & 0 \\
+        0 & 1/\sigma_y^2
+    \end{array}\right]
+\end{equation}
+
+where we can recover the half-axes $a = \sigma_x, b = \sigma_y$.
+The half-axes of the ellipse are the \textit{standard deviations}. To get the ellipse for any covariance matrix, we just need to extract its parameters (half-axes, orientation) like described in the previous sections. The center of the ellipse is just the mean value of the distribution. 
+Everything described in this section also applies for ellipsoids.
+
+
+
+
+
+\subsection{Forward propagation of uncertainty projection 3D~2D}
+Example of how to do forward propagation of uncertainty with the covariance matrix for a projection of a 3D point in 2D.
+
+Let $f$ be the projection function from 3D to 2D. This function is non-linear and can be decomposed into: $f = f_{intr} \circ f_{proj} \circ f_{Rt}$.
+\begin{equation}
+    x_i = f_{intr}\left(\begin{array}{c}
+        x \\ y \end{array}\right) = 
+        \left(\begin{array}{c}
+            f_x x + c_x \\
+            f_y y + c_y
+        \end{array}\right)
+\end{equation}
+
+\begin{equation}
+    x_n = f_{proj}\left(\begin{array}{c}
+        x \\ y \\ z \end{array}\right) = 
+        \left(\begin{array}{c}
+            x / z \\ y / z
+        \end{array}\right)
+\end{equation}
+
+\begin{equation}
+    X_{cam} = f_{Rt}(X) = R X + t
+\end{equation}
+Because $f$ is non-linear, we need to use a first-order approximation, using its Jacobian.
+
+\begin{equation}
+    C_{f(X)} = J_f(X) C_X J_f(X)^T
+\end{equation}
+
+This jacobian $J_f(X)$ can be obtained with chain-rule.
+
+\begin{equation}
+    J_f(X) = J_{f_{intr}}(x_n) J_{f_{proj}}(X_{cam}) J_{f_{Rt}}(X)
+\end{equation}
+
+where each sub-Jacobian is
+
+\begin{equation}
+   J_{f_{intr}}(x_n) = \left[\begin{array}{cc}
+       f_x & 0 \\
+        0 & f_y
+   \end{array}\right]
+\end{equation}
+
+\begin{equation}
+   J_{f_{proj}}(X_{cam}) = \left[\begin{array}{ccc}
+       1/X_{cam_Z} & 0 & - X_{cam_X}/X^2_{cam_Z} \\
+       0 & 1/X_{cam_Z} & - X_{cam_Y}/X^2_{cam_Z}
+   \end{array}\right]
+\end{equation}
+
+\begin{equation}
+    J_{f_{Rt}}(X) = R
+\end{equation}
+
+
+This way, we can get the covariance matrix of the projection of $X$. This $2\times2$ covariance matrix gives the half-axes and the position of the ellipse and its center is just the projection of the mean $\bar{x} = f(X)$.
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Multi-view reconstruction}
 
 \subsection{Triangulation}
@@ -528,3 +679,54 @@ The final reconstruction will differ from the "true" reconstruction by a \textit
 \paragraph{Projective reconstruction}
 In case of uncalibrated epipolar geometry, the fundamental matrix between the two views can be calculated but the corresponding camera matrices will be determined up to an unknown homography transform of the 3D space. This means the reconstruction will be done in a coordinate system that is transform by an unknown projective transformation from the "true" coordinate system. This means the reconstruction will be deformed in: angles, volumes, parallelism, ...
 This is a problem if we are interested in the quality of the reconstruction. If we only care about the projection of 3D points in 2 or more cameras, the specific coordinate system is of no importance, as long as each camera matrices refer to the same coordinate system.
+
+\subsubsection{Linear solution for triangulation (DLT)}
+
+A simple linear solution exists for point triangulation from observed points in at least two images and knowing their projection matrices. Let be $(x_i, y_i)$ the observed 2D points in images and $P_i$ thei corresponding projection matrices.
+The DLT method uses homogeneous coordinates. In equation $x_i \sim P_i X_i$ the 3-vector $x_i$ and $X_i$ are not equal but they have the same direction. We can use the vector product $x \times PX = 0$ to get a linear equation in $X$
+
+\begin{equation}
+    x \times PX = \left[
+    \begin{array}{c}
+        x \\ y \\ w
+    \end{array}\right]
+    \times
+    \left[\begin{array}{c}
+        P_1^T X \\ P_2^T X \\ P_3^T X
+    \end{array}\right]
+    =
+    \left(\begin{array}{c}
+        yP_3^TX-wP_2^TX \\
+        wP_1^TX-xP_3^TX \\
+        xP_2^TX-yP_1^TX 
+    \end{array}\right)
+    = \left[\begin{array}{c}
+         0 \\ 0 \\ 0
+    \end{array}\right]
+\end{equation}
+
+By assuming $w = 1$, we can rewrite the set of three equations:
+
+\begin{equation}
+    \begin{split}
+        x(p_3^TX) - (p_ 1^TX) = 0 \\
+        y(p_ 3^TX) - (p_ 2^TX) = 0 \\
+        x(p_2^TX) - y(p_1^TX) = 0
+    \end{split}
+\end{equation}
+
+in which only the first two equations are linearly independent (the third is just a sum of the two other up to a scale).
+
+We can then stack these two equations for each point (at least two).
+
+\begin{equation}
+    A = \left[\begin{array}{c}
+        xp_3^T - p_1^T \\
+        yp_3^T - p_2^T \\
+        x^\prime p_3^T - p_1^{\prime T} \\
+        y^\prime p_3^{\prime T} - p_2^{\prime T} \\
+        \vdots
+    \end{array}\right]
+\end{equation}
+
+and solve the $Ax=0$ system with an SVD.
