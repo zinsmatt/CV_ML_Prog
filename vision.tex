@@ -616,50 +616,142 @@ Let $f$ be the projection function from 3D to 2D. This function is non-linear an
 \begin{equation}
     X_{cam} = f_{Rt}(X) = R X + t
 \end{equation}
-Because $f$ is non-linear, we need to use a first-order approximation, using its Jacobian.
+Because $f$ is non-linear, we need to use a first-order approximation using its Jacobian. The covariance in the images of $f$ becomes
 
 \begin{equation}
-    C_{f(X)} = J_f(X) C_X J_f(X)^T
+    \Sigma_{f(X)} = J_f(X) \Sigma_X J_f(X)^T
 \end{equation}
 
-This jacobian $J_f(X)$ can be obtained with chain-rule.
-
-\begin{equation}
-    J_f(X) = J_{f_{intr}}(x_n) J_{f_{proj}}(X_{cam}) J_{f_{Rt}}(X)
-\end{equation}
+This jacobian $J_f(X)$ can be obtained with \textit{chain-rule}: $J_f(X) = J_{f_{intr}} J_{f_{proj}} J_{f_{Rt}}$
 
 where each sub-Jacobian is
 
 \begin{equation}
-   J_{f_{intr}}(x_n) = \left[\begin{array}{cc}
+   J_{f_{intr}} = \left[\begin{array}{cc}
        f_x & 0 \\
         0 & f_y
    \end{array}\right]
 \end{equation}
 
 \begin{equation}
-   J_{f_{proj}}(X_{cam}) = \left[\begin{array}{ccc}
+   J_{f_{proj}} = \left[\begin{array}{ccc}
        1/X_{cam_Z} & 0 & - X_{cam_X}/X^2_{cam_Z} \\
        0 & 1/X_{cam_Z} & - X_{cam_Y}/X^2_{cam_Z}
    \end{array}\right]
 \end{equation}
 
 \begin{equation}
-    J_{f_{Rt}}(X) = R
+    J_{f_{Rt}} = R
 \end{equation}
 
 
 This way, we can get the covariance matrix of the projection of $X$. This $2\times2$ covariance matrix gives the half-axes and the position of the ellipse and its center is just the projection of the mean $\bar{x} = f(X)$.
 
 
+\subsection{Backward propagation of uncertainty projection 2D~3D}
+Example of how 2D covariance is backprojected to 3D during point triangulation.
+Let $N$ be the number of cameras and $f: R^3 \rightarrow R^{2N}$ the projection of a 3D point in the cameras.
+
+\begin{equation}
+    f\left(\begin{array}{c}
+        X \\ Y \\ Z
+    \end{array}\right) = 
+    \left[\begin{array}{c}
+        x_1 \\ y_1 \\ x_2 \\ y_2 \\ \vdots
+    \end{array}\right]
+\end{equation}
+
+As before, $f$ can be decomposed into three sub-function: $f = f_{intr} \circ f_{proj} \circ f_{Rt}$.
+
+
+\begin{equation}
+    x_i = f_{intr}\left(\begin{array}{c}
+        x_1 \\ y_1 \\ x_2 \\ y_2 \\ \vdots \end{array}\right) = 
+        \left(\begin{array}{c}
+            f_x x_1 + c_x \\
+            f_y y_1 + c_y \\
+            f_x x_2 + c_x \\
+            f_y y_2 + c_y \\
+            \vdots
+        \end{array}\right)
+\end{equation}
+
+\begin{equation}
+    x_n = f_{proj}\left(\begin{array}{c}
+        x_1 \\ y_1 \\ z_1 \\
+        x_2 \\ y_2 \\ z_2 \\ \vdots \end{array}\right) = 
+        \left(\begin{array}{c}
+            x_1 / z_1 \\ y_1 / z_1 \\
+            x_2 / z_2 \\ y_2 / z_2 \\ 
+            \vdots
+        \end{array}\right)
+\end{equation}
+
+\begin{equation}
+    X_{cam} = f_{Rt}(X) = \left[\begin{array}{c}
+        R_1 X + t_1 \\
+        R_2 X + t_2 \\
+        \vdots
+    \end{array}\right]
+\end{equation}
+
+Because $f$ is non-linear, we need to use a first-order approximation using its Jacobian evaluated in the estimated 3D point. The covariance of the estimated parameters is
+
+\begin{equation}
+    \Sigma_{\hat{X}} = (J_f^T \Sigma_{obs}^{-1} J_f)^{-1}
+\end{equation}
+
+It is important to note that if we use only one observation, the matrix on the right part in the previous equation will be singular and it will not be possible to inverse it.
+$\Sigma_{obs}$ is the covariance matrix of the 2D observations and has the form
+
+\begin{equation}
+    \Sigma_{obs} = \left[\begin{array}{ccccc}
+        \sigma_x^2 & 0 & 0 & 0 & \hdots \\
+        0 & \sigma_y^2 & 0 & 0 & \hdots \\
+        0 & 0 & \sigma_x^2 & 0 & \hdots \\
+        0 & 0 & 0 & \sigma_y^2 & \hdots \\
+        \vdots & \vdots & \vdots & \vdots & \ddots 
+    \end{array}\right]
+\end{equation}
 
 
 
+The Jacobian $J_f$ evaluated around the our estimated parameters $\hat{X}$ can again be obtained using \textit{chain rule}: $J_f = J_{f_{intr}} J_{f_{proj}} J_{f_{Rt}}$
 
+\begin{equation}
+   J_{f_{intr}} = \left[\begin{array}{ccccc}
+       f_x & 0 & 0 & 0 & \hdots\\
+        0 & f_y & 0 & 0 &\hdots \\
+        0 & 0 & f_x & 0 & \hdots\\
+        0 & 0 & 0 & f_y &\hdots \\
+        \vdots & \vdots &  \vdots &  \vdots &  \ddots
+   \end{array}\right]
+\end{equation}
 
+\begin{equation}
+   J_{f_{proj}} = \left[\begin{array}{ccccccc}
+       1/X_{c1_Z} & 0 & - X_{c1_X}/X^2_{c1_Z} &0&0&0&\hdots \\
+       0 & 1/X_{c1_Z} & - X_{c1_Y}/X^2_{c1_Z} &0&0&0&\hdots \\
+       0&0&0& 1/X_{c2_Z} & 0 & - X_{c2_X}/X^2_{c2_Z} &\hdots \\
+       0&0&0& 0 & 1/X_{c2_Z} & - X_{c2_Y}/X^2_{c2_Z} &\hdots \\
+       \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots
+   \end{array}\right]
+\end{equation}
 
+\begin{equation}
+    J_{f_{Rt}} = \left[\begin{array}{c}
+        R_1 \\ R_2 \\ \vdots
+    \end{array}\right]
+\end{equation}
 
+\textbf{\underline{Note:}} The final Jacobian $J_f$ is just all the individual Jacobian of the projection in one camera stacked.
+\begin{equation}
+    J_f = \left[\begin{array}{c}
+        J_{f1} \\ J_{f2} \\ \vdots
+    \end{array}\right]
+\end{equation}
 
+In the end, the $3\times3$ covariance matrix $\Sigma_{\hat{X}}$ is the dual-form matrix of the uncertainty ellipsoid. We can reconstruct this ellipsoid by extracting the half-axes and the orientation from this matrix. The center is given by the estimated 3D point.
 
 
 \section{Multi-view reconstruction}
