@@ -754,6 +754,22 @@ The Jacobian $J_f$ evaluated around the our estimated parameters $\hat{X}$ can a
 In the end, the $3\times3$ covariance matrix $\Sigma_{\hat{X}}$ is the dual-form matrix of the uncertainty ellipsoid. We can reconstruct this ellipsoid by extracting the half-axes and the orientation from this matrix. The center is given by the estimated 3D point.
 
 
+\subsection{Covariance of the estimate in Least-squares}
+Let $y$ be our observations, $x$ the parameters and $\epsilon$ a zero-mean noise.
+\begin{equation}
+    y = Ax+\epsilon
+\end{equation}
+
+The covariance of our estimator $\hat{x} = (A^T A)^{-1} A^T y$ is
+\begin{equation}
+    \hat{\Sigma}_x = (A^T A)^{-1} A^T \Sigma_y A (A^T A)^{-1}
+\end{equation}
+
+In the case of point triangulation, we do not use that because of the unknown scale when using homogeneous coordinates. Instead, we use a non-linear function $f$ and use its first-order approximation (with its Jacobian).
+
+
+
+
 \section{Multi-view reconstruction}
 
 \subsection{Triangulation}
