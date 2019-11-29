@@ -87,6 +87,9 @@ This show how to decompose an ellipse into: half-axes, orientation and center.
  $C_{centered} = T_{-c} C T_{-c}^T $ \tcp*{Get the ellipsoid centered}
  $C_{centered} = 0.5\times(C_{centered}+C_{centered}^T)$ \tcp*{Enforce symmetry}
  $D, R = eig(C_{centered}[:2, :2])$ \tcp*{Eigen decomposition}
+ \uIf{$det(R) == -1$}{
+    $R[:, 1] *= -1$   \tcp*{Force to be a rotation matrix. Invert the eigen vec assoc to the smallest eigen val}
+ }
  $a, b = sqrt(abs(D))$, $orientation = R$, $center = c$
 \caption{Decompose ellipse}
 \end{algorithm}
@@ -240,6 +243,9 @@ This show how to decompose an ellipsoid into: half-axes, orientation and center.
  $Q_{centered} = T_{-c} Q T_{-c}^T $ \tcp*{Get the ellipsoid centered}
  $Q_{centered} = 0.5\times(Q_{centered}+Q_{centered}^T)$ \tcp*{Enforce symmetry}
  $D, R = eig(Q_{centered}[:3, :3])$ \tcp*{Eigen decomposition}
+  \uIf{$det(R) == -1$}{
+    $R[:, 2] *= -1$  \tcp*{Force to be a rotation matrix. Invert the eigen vec assoc to the smallest eigen val}
+ }
  $a, b, c = sqrt(abs(D))$, $orientation = R$, $center = c$
 \caption{Decompose ellipsoid}
 \end{algorithm}
@@ -776,7 +782,37 @@ The covariance of our estimator $\hat{x} = (A^T A)^{-1} A^T y$ is
 
 In the case of point triangulation, we do not use that because of the unknown scale when using homogeneous coordinates. Instead, we use a non-linear function $f$ and use its first-order approximation (with its Jacobian).
 
+\section{Linear least-squares}
+\subsection{Statistical approach}
+Suppose the problem:
+\begin{equation}
+    y = X\beta + \epsilon
+\end{equation}
+where $\epsilon$ is a noise.
 
+\paragraph{Ordinary least squares}
+In that case, we suppose that the noise has an isotropic Gaussian distribution, $mean = 0$ and covariance is $\sigma^2I$. The estimator is 
+\begin{equation}
+    \hat{\beta} = (X^T X)^{-1}X^Ty
+\end{equation}
+
+and the estimator covariance is
+\begin{equation}
+    \Sigma_{\hat{\beta}} = \sigma^2 (X^T X)^{-1}
+\end{equation}
+
+\paragraph{Generalized least squares}
+
+In that case, we have no supposition on the covariance of the noise. The noise has $mean=0$ and its covariance is $\Sigma_{\epsilon}$. The estimator is still
+\begin{equation}
+    \hat{\beta} = (X^T X)^{-1}X^Ty
+\end{equation}
+
+and the covariance is
+\begin{equation}
+    \Sigma_{\hat{\beta}} = (X^T X)^{-1} X^T \Sigma_{\epsilon} X (X^T X)^{-1}
+\end{equation}
+In fact, this seems to be the same as the method from "the Bible": $(J^T \Sigma^{-1} J)^{-1}$.
 
 
 \section{Multi-view reconstruction}
