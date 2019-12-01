@@ -590,7 +590,7 @@ The covariance matrix is:
     \end{array}\right]
 \end{equation}
 
-This corresponds to the \textbf{dual-form} matrix of the ellipse of uncertainties. The \textbf{primal-form} matrix is
+This corresponds to the top-left block of the \textbf{dual-form} matrix of the ellipse of uncertainties. The \textbf{primal-form} matrix is
 
 \begin{equation}
     cov = \left[\begin{array}{cc}
@@ -766,7 +766,7 @@ The Jacobian $J_f$ evaluated around the our estimated parameters $\hat{X}$ can a
     \end{array}\right]
 \end{equation}
 
-In the end, the $3\times3$ covariance matrix $\Sigma_{\hat{X}}$ is the dual-form matrix of the uncertainty ellipsoid. We can reconstruct this ellipsoid by extracting the half-axes and the orientation from this matrix. The center is given by the estimated 3D point.
+In the end, the $3\times3$ covariance matrix $\Sigma_{\hat{X}}$ is the top-left block of the dual-form matrix of the uncertainty ellipsoid. We can reconstruct this ellipsoid by extracting the half-axes and the orientation from this matrix. The center is given by the estimated 3D point.
 
 
 \subsection{Covariance of the estimate in Least-squares}
