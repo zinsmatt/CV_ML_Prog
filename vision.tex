@@ -232,7 +232,7 @@ where $Q^*$ is the adjointe matrix (conjugate transpose) of $Q$ and we have $Q^*
 
 
 \subsubsection{Decompose an ellipsoid}
-This show how to decompose an ellipsoid into: half-axes, orientation and center.
+This show how to decompose an ellipsoid into: half-axes, orientation and center. The rotation and axes length are given using an arbitrary coordinate system of the ellipsoid. There are ambiguities. For example, half-axes length can be switch and compensated by the rotation. If we want to compare the result with another ellipsoid, we need to correctly map the axes by comparing their length and the direction (the col of R).
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
