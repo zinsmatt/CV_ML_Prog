@@ -883,3 +883,16 @@ We can then stack these two equations for each point (at least two).
 \end{equation}
 
 and solve the $Ax=0$ system with an SVD.
+
+
+\subsection{SfM}
+
+\subsubsection{Choice of initial the initial pair of images}
+
+When doing incremental SfM, a common pipeline is:
+\begin{enumerate}
+    \item Choose a pair of images and do triangulation
+    \item Add each other image by finding 3D-2D correspondences, P3P and maybe re-triangulate new matches.
+\end{enumerate}
+
+A smart way to choose the initial two images to use is by trying to find a homography between each pair of images and select the pair with the less number of inliers but with at least a certain number of correspondences. Typically, the pair of images which are the less "homography-related" should have the largest baseline which is better for triangulation.
