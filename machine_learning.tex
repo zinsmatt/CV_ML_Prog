@@ -95,3 +95,33 @@ The \textit{precision matrix} is defined as the inverse of the covariance matrix
 \begin{equation}
     \Lambda = \Sigma^{-1}
 \end{equation}
+
+\subsubsection{Maximum Likelihood for Gaussian distribution}
+Given a dataset $X = (x_1, x_2, \dots, x_n)^T$, in which the observations are assumed to be drawn independently from a multivariate Gaussian distribution, it is possible to estimate the parameters of this Gaussian distribution by maximizing the likelihood (or equivalently the log-likelihood) function.
+
+\begin{equation}
+    \ln{p(X|\mu, \Sigma)} = -\frac{ND}{2}\ln{(2\pi)}-\frac{N}{2}\ln{|\Sigma|}-\frac{1}{2}\sum_{n=1}^{N} (x_n - \mu)^T \Sigma^{-1} (x_n - \mu)
+\end{equation}
+We can compute the derivative of the likelihood function.
+\begin{equation}
+    \frac{\delta}{\delta \mu} \ln{p(X|\mu, \Sigma)} = \sum_{n=1}^{N} \Sigma^{-1} x_n
+\end{equation}
+
+By setting the derivative to zero, we can find the maximum likelihood estimate of $\mu$ and $\Sigma$.
+\begin{equation}
+    \mu_ {ML} = \frac{1}{N}\sum_{n=1}^{N} x_n
+\end{equation}
+\begin{equation}
+    \Sigma_{ML} = \frac{1}{N} \sum_{n=1}^{N} (x_n - \mu_{ML})(x_n - \mu_{ML})^T
+\end{equation}
+
+\underline{Warning:} We can compute the expectation for the maximum likelihood estimate of the mean and covariance. We will obtain:
+\begin{equation}
+    \mathbb{E}[\mu_ {ML}] = \mu
+\end{equation}
+\begin{equation}
+    \mathbb{E}[\Sigma_{ML}] = \frac{N-1}{N}\Sigma
+\end{equation}
+
+The maximum likelihood estimate of the covariance has an expectation lower than the true covariance and hence it is biased. We can correct this bias by using another estimator.
+An intuition for this bias is that $\mathbb{E}[\mu_{ML}^2]$ is biased compared to $\mu^2$. When we over- under-estimate the mean, the error compensate but the square causes the error to be always positive and thuis biased.
