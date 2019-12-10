@@ -1,2 +1,97 @@
 \part{Machine Learning}
 
+\section{Probabilities}
+
+\subsection{Binary variables}
+
+\subsubsection{Bernoulli distribution}
+
+Suppose $x = \{0, 1\}$ is a binary random variable and the probability of $x = 1$ is denoted $\mu$.
+\begin{equation}
+    \mathcal{P}(x=1|\mu) = \mu
+\end{equation}
+
+$x$ follows the Bernoulli distribution defined as
+\begin{equation}
+    Bern(x|\mu) = \mu^x (1-\mu)^{1-x}
+\end{equation}
+It can be easily shown that its expectation and variance are
+\begin{equation}
+    \mathbb{E}[x] = \mu
+\end{equation}
+\begin{equation}
+    var[x] = \mu(1-\mu)
+\end{equation}
+
+Now suppose we have a set of observations of $x$, $D = \{x_1, x_2, \dots x_N\}$. We can construct the likelihood function
+\begin{equation}
+    p(\mathcal{D}|\mu) = \prod_{i=1}^{N} p(x_i|\mu) = \prod_{i=1}^{N} \mu^{x_i} (1-\mu)^{1-x_i}
+\end{equation}
+
+With a statistical approach it is possible to estimate the value of $\mu$ by maximizing the likelihood function, or equivalently, maximizing the \textit{log likelihood} function.
+\begin{equation}
+    \ln{p(\mathcal{D}|\mu)}=\sum_{i=1}^{N} \ln{p(x_i|\mu)} = \sum_{i=1}^{N} \{x_i \ln{\mu} + (1-x_i) \ln{(1-\mu)}\}
+\end{equation}
+
+I we set the derivative of $\ln{p(\mathcal{D}|\mu)}$ with respect to $\mu$ to zero, we get 
+\begin{equation}
+    \mu_{ML} = \frac{1}{N}\sum_{i=1}^N x_i
+\end{equation}
+In other words, this is the number of one divided by the total number of experiences.
+Now suppose, we flip a coin 3 times and get 3 times 1. The maximum likelihood is $\mu = 1$. Common sense tells us that it seems unreasonable and we will see that we need to use priors (on the distribution of $\mu$ for example) to solve the problem.
+
+\subsubsection{Binomial distribution}
+Now suppose that we want to know the number of times $m$ that $x=1$ among $N$ experiences. This follows a binomial distribution given by
+\begin{equation}
+    Bin(m|\mu, N) = \left(\begin{array}{c}
+        N \\ m
+    \end{array}\right)
+    \mu^{m} (1-\mu)^{N-m}
+\end{equation}
+
+Its expectation and variance are given by
+\begin{equation}
+    \mathbb{E}[m] = N\mu
+\end{equation}
+\begin{equation}
+    var[x] = N\mu(1-\mu)
+\end{equation}
+
+\subsubsection{Multinomial distribution}
+We often encounter discrete variables which can take one of $K$ mutually exclusive states. We represent it with a K-dimensional vector where each element can be 1 or 0. $x = (0, 0, 1, 0, 0, 0)^T$. We denote the probability if $x_k=1$ by $\mu_k$. Then, the distribution of $x$ is given by
+\begin{equation}
+    p(x|\mu) = \prod_{k=1}^{K} \mu_k^{x_k}
+\end{equation}
+where $\mu=(\mu_1, \dots, \mu_K)$ and the parameters $\mu_k$ are constrained by $\mu_k \ge 0$ and $\sum_{k=1}^K \mu_k = 1$.
+
+\subsection{Gaussian distribution}
+For a N-dimensional random vector $x$, the multivariate Gaussian distribution is given by
+\begin{equation}
+    \mathcal{N}(x|\mu,\Sigma^2) = \frac{1}{(2\pi)^{D/2}\sqrt{|\Sigma|}} \exp\{-\frac{1}{2}(x-\mu)^T \Sigma^{-1}(x-\mu)\}
+\end{equation}
+The Gaussian distribution arises in many contexts. For example, the Gaussian distribution is the distribution which maximizes the \textit{entropy}.
+Also, the \textit{central limit theorem} tells us that the sum of a set of random variables tends to follow a Gaussian distribution.
+
+The covariance matrix $\Sigma$ is symmetric and have real eigen values and its eigen vectors can be chosen to form an orthonormal set.
+\begin{equation}
+    \Sigma u_i = \lambda_i u_i
+\end{equation}
+$\Sigma$ can be decomposed in $\Sigma = U S U^T$, where $U$ has the eigen vectors as columns and $S$ is a diagonal matrix. This implies that $\Sigma^{-1} = (USU^T)^{-1} = U S^{-1} U^T$. We can then use a change of variable $y = U^T(x-\mu)$
+\begin{equation}
+    (x-\mu)^T \Sigma^{-1} (x-\mu) = y^T S^{-1} y
+\end{equation}
+In this new coordinate system, the Gaussian distribution becomes a set of N independent 1-dimensional Gaussian distributions. 
+
+One limitation of Gaussian distribution is the large number of free parameters. Considering a D-dimensional Gaussian distribution, its covariance matrix will have $D(D+1)/2$ independent parameters and another $D$ parameters for $\mu$. This means the number of parameters grows quadratically with the dimension.
+One way of addressing that is to add constraints on the form of the covariance matrix. We could restrict it to be diagonal for example ($\Sigma=diag(\sigma_i^2)$). This give $2\times D$ parameters. We could even further restrict it to $\Sigma = \sigma^2 I$. This is called an \textit{Isotropic Gaussian distribution}.
+
+Another limitation is that a Gaussian distribution is intrinsically uniquely modal (i.e it has a single maximum) and thus is unable to provide a good approximation to multimodal distributions.
+
+\paragraph{Conditional Gaussian distributions}
+An important property of multivariate Gaussian distribution is that if two sets of variables are jointly Gaussian, then the conditional distribution of one set conditioned on the other is also Gaussian. Similarly, the \textbf{marginal distribution} of either set is also Gaussian.
+
+\paragraph{Precision matrix}
+The \textit{precision matrix} is defined as the inverse of the covariance matrix.
+\begin{equation}
+    \Lambda = \Sigma^{-1}
+\end{equation}

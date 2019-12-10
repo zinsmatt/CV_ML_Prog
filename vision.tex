@@ -801,18 +801,20 @@ and the estimator covariance is
     \Sigma_{\hat{\beta}} = \sigma^2 (X^T X)^{-1}
 \end{equation}
 
-\paragraph{Generalized least squares}
+\paragraph{Generalized least squares or Weighted least squares}
 
-In that case, we have no supposition on the covariance of the noise. The noise has $mean=0$ and its covariance is $\Sigma_{\epsilon}$. The estimator is still
+In that more general case, we have less suppositions on the covariance of the noise: $\Sigma_{\epsilon} = \sigma^2 V$. If $V$ is diagonal but with unequal elements on the diagonal, the observations are uncorrelated but have unequal variance, while if $V$ has off-diagonal non-zero values the observations are correlated. In that case, the \textit{ordinary least-squares} estimate is not optimal. The solution is to transform the observations into new observations that satisfy the constant variance property.
+
+The optimal estimator becomes
+
 \begin{equation}
-    \hat{\beta} = (X^T X)^{-1}X^Ty
+    \hat{\beta} = (X^T \Sigma_{\epsilon}^{-1} X)^{-1} X^T \Sigma{\epsilon}^{-1} y
 \end{equation}
 
-and the covariance is
+Its covariance matrix is 
 \begin{equation}
-    \Sigma_{\hat{\beta}} = (X^T X)^{-1} X^T \Sigma_{\epsilon} X (X^T X)^{-1}
+   \Sigma_{\hat{\beta}} = \sigma^2 (X^T \Sigma_{\epsilon}^{-1} X)^{-1}
 \end{equation}
-In fact, this seems to be the same as the method from "the Bible": $(J^T \Sigma^{-1} J)^{-1}$.
 
 
 \section{Multi-view reconstruction}
