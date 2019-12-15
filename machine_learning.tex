@@ -104,7 +104,7 @@ Given a dataset $X = (x_1, x_2, \dots, x_n)^T$, in which the observations are as
 \end{equation}
 We can compute the derivative of the likelihood function.
 \begin{equation}
-    \frac{\delta}{\delta \mu} \ln{p(X|\mu, \Sigma)} = \sum_{n=1}^{N} \Sigma^{-1} x_n
+    \frac{\delta}{\delta \mu} \ln{p(X|\mu, \Sigma)} = \sum_{n=1}^{N} \Sigma^{-1} (x_n - \mu)
 \end{equation}
 
 By setting the derivative to zero, we can find the maximum likelihood estimate of $\mu$ and $\Sigma$.
