@@ -125,3 +125,67 @@ By setting the derivative to zero, we can find the maximum likelihood estimate o
 
 The maximum likelihood estimate of the covariance has an expectation lower than the true covariance and hence it is biased. We can correct this bias by using another estimator.
 An intuition for this bias is that $\mathbb{E}[\mu_{ML}^2]$ is biased compared to $\mu^2$. When we over- under-estimate the mean, the error compensate but the square causes the error to be always positive and thuis biased.
+
+\subsubsection{Sequential estimation}
+When the dataset is too large or for online processing, it can be very useful to do sequential estimation. For example, it is possible to compute the influence of the last observation in the Maximum Likelihood of the mean.
+\begin{equation}
+\begin{split}
+    \mu_{ML}^{(N)} & = \frac{1}{N}\sum_{n=1}^{N} x_n \\
+     & = \frac{1}{N} x_n + \frac{1}{N}\sum_{x=1}^{N-1} x_n \\
+     & = \frac{1}{N}x_n + \frac{N-1}{N}\mu_{ML}^{(N-1)} \\
+     & =\mu_{ML}^{(N-1)} + \frac{1}{N}(x_n - \mu_{ML}^{(N-1)})
+\end{split}
+\end{equation}
+
+This show that the last observation has an influence proportional to the current $N$. It tries to draw the mean towards itself, but, because of the proportional factor, each new data has less and less impact as the number of observations increases.
+
+\subsubsection{Bayesian inference for the Gaussian}
+
+The maximum likelihood framework gives estimate of the parameters $\mu$ and $\Sigma$. Here we develop a Bayesian treatment by introduction priors distributions over these parameters.
+
+\underline{Example}: Estimating the mean of a Gaussian random variable knowing its variance $\sigma^2$. The likelihood function, that is the probability of the observed data $\boldsymbol{X}$ given $\mu$ is given by
+
+\begin{equation}
+    p(\boldsymbol{X}|\mu) = \prod_{n=1}^{N} p(x_n | \mu) = \frac{1}{(2\pi \sigma^2)^{N/2}} exp\left[ -\frac{1}{2\sigma^2}\sum_{n=1}^{N} (x_n - \mu)^2 \right]
+\end{equation}
+\underline{Note}: The likelihood function $p(\boldsymbol{X}|\mu)$ is not a probability distribution over $\mu$ and is not normalized.
+
+We see that the likelihood function takes the form of the exponential of a quadratic form in $\mu$. Thus, if we choose a prior $p(\mu)$ given by a Gaussian, it will be a conjugate distribution for this likelihood function because the corresponding posterior will be a product of two exponentials of quadratic functions of $\mu$ and hence will also be Gaussian.
+We take our prior distribution of $\mu$ as
+\begin{equation}
+    p(\mu) = \mathcal{N}(\mu|\mu_0, \sigma_0^2)
+\end{equation}
+The posterior distribution is given by 
+\begin{equation}
+    p(\mu|\boldsymbol{X}) \propto p(\boldsymbol{X}|\mu) p(\mu)
+\end{equation}
+
+Simple manipulation show that the posterior distribution is given by
+
+\begin{equation}
+    p(\mu | \boldsymbol{X}) = \mathcal{N}(\mu | \mu_N, \sigma_N^2)
+\end{equation}
+where
+\begin{equation}
+    \mu_N = \frac{\sigma^2}{N\sigma_0^2 + \sigma^2} \mu_0 + \frac{N\sigma_0^2}{N\sigma_0^2 + \sigma^2}\mu_{ML}
+\end{equation}
+\begin{equation}
+    \frac{1}{\sigma_N^2} = \frac{1}{\sigma_0^2} + \frac{N}{\sigma^2}
+\end{equation}
+
+where $\mu_{ML}$ is the maximum likelihood solution for $\mu$ given by the samples mean
+\begin{equation}
+    \mu_{ML} = \frac{1}{N}\sum_{n=1}{N} x_n
+\end{equation}
+
+It is important to note a few things:
+\begin{itemize}
+    \item The mean of the posterior distribution is a compromise between the prior mean $\mu_0$ and the maximum likelihood solution $\mu_{ML}$.
+    \item If the number of observations is $N = 0$, the posterior mean is the prior mean $\mu_0^2$.
+    \item If $N \rightarrow \infty$ the posterior mean is the maximum likelihood solution $\mu_{ML}$.
+    \item For the variance of the posterior distribution, it is easier to look at its inverse (the precision).
+    \item The precisions are additive. Thus the precision of the posterior is the precision of the prior plus a contribution of the data precision for each observed data point.
+    \item If $N = 0$, the posterior variance is equal to the prior variance.
+    \item If $N \rightarrow \infty$, the posterior variance $\sigma_N^2$ goes to zero and the posterior distribution becomes infinitely peaked around the maximum likelihood solution.
+    \item For a finite number of observations $N$, if we take a prior variance very large $\sigma_0^2 \rightarrow \infty$, the posterior mean reduces to the maximum likelihood and the posterior variance reduces to $\sigma_N^2 = \sigma^2/N$.
+\end{itemize}
