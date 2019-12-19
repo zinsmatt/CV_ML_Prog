@@ -1,0 +1,18 @@
+\section{Vision Algorithms}
+
+\subsection{Camera Look-at function}
+The goal of this function is to compute the camera pose of a camera given a position, a point to look at and a up direction. The algorithm aligns the camera axis $-y$ to the up direction.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwInput{position, focal\_point, up\_vector}
+\KwOutput{camera orientation ($3\times3$ matrix)}
+$z = focal\_point - position $ \\
+$z_n = z / \norm{z}$ \tcp*{Adjust viewing direction}
+\uIf{$|<z_n, up\_vector>| \approx 1$}{throw exception \tcp*{viewing direction collinear with $up\_vector$}}
+$x = z_n \times -up\_vector$ \tcp*{Adjust second direction}
+$x_n = x/\norm{x}$ \\
+$y_n = z_n \times x_n$ \tcp*{Get the third direction}
+$R_{3x3} = [x_n, y_n, z_n]$ \tcp*{Concatenate the 3 vectors into a rotation matrix}
+\caption{Camera Look-at}
+\end{algorithm}
