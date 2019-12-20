@@ -1,0 +1,28 @@
+\part{Programming}
+
+\section{Arithmetic}
+
+\subsection{Divisibility}
+\subsubsection{Divisible by 3?}
+A number is divisible by 3 if and only if the sum of its digits is divisible by 3.
+
+\subsubsection{Divisible by 20?}
+A number is divisible by 20 if it ends in: 20, 40, 60, 80 or 00.
+
+\subsection{Chinese Reminder Theorem}
+
+\theoremstyle{definition}
+\begin{definition}{Chinese Reminder Theorem}
+Suppose
+\begin{equation}
+    \begin{split}
+        x \equiv a_1  \ (\textrm{mod}\ n_1) \\
+        x \equiv a_2  \ (\textrm{mod}\ n_2) \\
+        x \equiv a_3  \ (\textrm{mod}\ n_3)
+    \end{split}
+\end{equation}
+If $n_1, n_2, n_3$ are pairwise prime (i.e $gcd = 1$ for each pair), their exist a solution and this solution is unique modulo $n = n_1 n_2 n_3$.
+\end{definition}
+
+\paragraph{Example}
+Determine if a number is divisible by 60. The Chinese Reminder theorem tells us that a number is divisible by 60 if and only if it is divisible by 3 and 20.

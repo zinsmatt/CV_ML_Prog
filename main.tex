@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{graphicx}
+\usepackage{amsthm}
 
 \usepackage{xcolor}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
@@ -12,7 +13,11 @@
 
 \SetKwInput{KwInput}{Input}                % Set the Input
 \SetKwInput{KwOutput}{Output}              % set the Output
-
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+ 
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
 
 %%% for the ||norm|| symbol
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
@@ -62,5 +67,6 @@ X_{camera} = {}^{c}P_{l}\;X_{lidar} = {}^{c}P_{l}\;
 \include{vision_algorithms}
 \include{machine_learning}
 \include{deep_learning}
+\include{programming}
 
 \end{document}
