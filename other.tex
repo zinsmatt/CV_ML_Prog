@@ -1,7 +1,7 @@
 \section{Other}
 
 
-\section{Canny filter and hysteresis}
+\subsection{Canny filter and hysteresis}
 
 Hysteresis is defined by two thresholds: $\beta_1, \beta_2$ with $\beta_1 > \beta_2$.
 \begin{itemize}
@@ -10,6 +10,16 @@ Hysteresis is defined by two thresholds: $\beta_1, \beta_2$ with $\beta_1 > \bet
     \item The points between $\beta_2$ and $\beta_1$ are kept if they form a long enough chain.
 \end{itemize}
 
+\section{Linear Algebra}
+\subsection{Properties of symmetric matrices}
+A symmetric matrix $S$ ($S = S^T$) has the following properties:
+\begin{itemize}
+    \item $S$ has \textbf{only real} eigenvalues.
+    \item is called \textbf{positive semi-definite} if $x^TSx \leq 0, \forall x$
+    \item is called \textbf{positive definite} if $x^TSx > 0, \forall x \neq 0$
+    \item all its eigenvectors associated to different eigenvalues are \textbf{orthogonal}
+    \item is positive (semi)-definite, if all eigenvalues are positive (non negative).
+\end{itemize}
 
 
 
