@@ -19,8 +19,36 @@ A symmetric matrix $S$ ($S = S^T$) has the following properties:
     \item is called \textbf{positive definite} if $x^TSx > 0, \forall x \neq 0$
     \item all its eigenvectors associated to different eigenvalues are \textbf{orthogonal}
     \item is positive (semi)-definite, if all eigenvalues are positive (non negative).
+    \item if $S$ is positive semi-definite and if we look at how $S$ transform the points on the unit circle $|x|=1$. The first eigenvalue is the value of the largest deformation and the last eigenvalue is the value of the smallest deformation. (if we sort eigenvalues in decreasing order)
 \end{itemize}
 
+\subsection{Skew-symmetric matrices}
 
+A \textbf{skew-symmetric} or \textbf{anti-symmetric} matrix is such that: $A^T = -A$. It has the following properties:
+
+\begin{itemize}
+    \item All eigenvalues are either 0 or purely imaginary
+    \item It cannot be diagonalized as a diagonal matrix but it can be diagonalized as a block-diagonal matrix.
+    $A = V S V^T$, where $V$ is an orthogonal matrix an $S$ has its diagonal formed by $2\times 2$ matrices.
+    \item The previous properties implies that the rank of $S$ can only be even.
+\end{itemize}
+
+The $3\times 3$ skew-symmetric is often used.
+\begin{equation}
+    \hat{U} = \left( \begin{array}{ccc}
+        0 & -u_3 & u_2 \\
+        u_3 & 0 & -u_1 \\
+        -u_2 & u_1 & 0 
+    \end{array} \right)
+    \in \mathbb{R}^{3\times 3}
+\end{equation}
+
+It has 3 parameters: $u_1, u_2, u_3$.
+It is called \textit{hat operator} and is a linear operator from $\mathbb{R}^3$ to $\mathbb{R}^{3\times 3}$. Also, multiplying a vector by this matrix is similar to the cross-product.
+\begin{equation}
+    \hat{U} V = U \times V
+\end{equation}
+
+The matrix $\hat{U}$ has rank 2 and thus a null-space of dimension 1. This null-space is actually spanned by the vector $U = (u_1, u_2, u_3)T$.
 
 
