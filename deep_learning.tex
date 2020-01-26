@@ -1,5 +1,39 @@
 \part{Deep Learning}
 
+\section{Neural Networks}
+
+\subsection{Dropout}
+The dropout method has been used for a long time in order to avoid over-fitting. Networks nodes (i.e. neurons) are disable randomly during training time so that with each training step, a different subset of the network architecture is evaluated and adjusted. This can be seen as a regularization and proves to result in better generalization in many cases.
+
+\subsection{Dropout Sampling (Monte-Carlo)}
+Randomly turns off network node during inference. This results in a random prediction with some complex probability distributions every time an input value is passed to the network. The empirical distribution or parameter estimates can be used to obtain, for example, a mean value and a confidence measure in terms of the distributional variance. We expect that the empirical variance is low here there was an abundance of training data since all network subsets had the opportunity to learn in these areas. However, in areas where there was no training data to learn from, the network behavior is not controllable so we expect a high variance among the different network subsets.
+
+
+\subsection{Deep Ensembles}
+in a general regression setup, the neural network takes a vector of inputs and generates a single output that represents our prediction. This is done according the network parameters obtained during training process. However ,if we assume our real data to behave according to a parametric probability distribution whose parameters depend on the input values, we can take the underlying model into account and estimate not only the actual output value but a set of distributional parameters.
+
+Assume that our model has a single output $y$ which is not deterministic but normally distributed with parameters $(\mu(x), \sigma^2(x)$ depending on the input $x$. In the training, instead of using the common mean squared error loss function, we will take into account the distribution as well. We can achieve this by using a maximum likelihood (ML) approach. We can take the negative log-likelihood function of the normal distribution as a loss function (ignoring the constants).
+
+\begin{equation}
+    \mathcal{L}(x, y) = -log \phi(y|x) = \frac{log \hat{\sigma}^2(x)}{2}+\frac{(y-\hat{\mu}(x))^2}{2\hat{\sigma}^2(x)}
+\end{equation}
+
+And for multiple samples, we average to minimize the \textit{mean negative log-likelihood}.
+intuitively, the numerator of the right term encourages the mean prediction $\hat{\mu}(x)$ to be close to the observed value. The denominator term ensures that the variance $\hat{\sigma}^2(x)$ is large when the mean prediction is far from the observed data.
+
+\subsection{Ensemble Averaging}
+
+Instead of training a single network, the idea is to train an ensemble of $M$ networks with different initialization. We expect that all the networks behave similarly in areas with sufficient training data and give completely different results where there is no data available.
+For the final prediction, they combine all the results of the networks into a Gaussian mixture distribution, from which it is possible to extract a single mean and variances estimations.
+
+\subsection{Dropout Ensembles}
+Combine Dropout and Deep Ensembles.
+
+\subsection{Quantile Regression}
+Another classic method for distribution estimation with neural networks.
+
+\subsection{Gaussian Process}
+A Gaussian Process is a random function that is defined by its mean and covariance functions.
 
 \section{Yolo}
 Basic idea for the Yolo (v1, v2, v3) object detection algorithm.

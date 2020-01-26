@@ -898,3 +898,27 @@ When doing incremental SfM, a common pipeline is:
 \end{enumerate}
 
 A smart way to choose the initial two images to use is by trying to find a homography between each pair of images and select the pair with the less number of inliers but with at least a certain number of correspondences. Typically, the pair of images which are the less "homography-related" should have the largest baseline which is better for triangulation.
+
+
+
+\section{Sensor Fusion and Non-linear Filtering}
+
+Filtering correspond to one sensor and sensor fusion is used in case of multiple sensors, but they are equivalent.
+
+\subsection{Probability theory}
+\textbf{Probability Mass Function (PMF)} is used for discrete random variables and we have:
+\begin{equation}
+\begin{split}
+    P\{z=i\} \ge 0,  \forall i \\
+    \sum P\{z\} = 1
+\end{split}
+\end{equation}
+
+\textbf{Probability Density Function (PDF)} is used for continuous random variables and we have:
+\begin{equation}
+    \begin{split}
+        p(z) \ge 0 ,\forall z \\
+        \int p(z) dz = 1
+    \end{split}
+\end{equation}
+\underline{Warning}: This is not a probability, thus $p(z)$ can be $>1$.

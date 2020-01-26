@@ -26,3 +26,25 @@ If $n_1, n_2, n_3$ are pairwise prime (i.e $gcd = 1$ for each pair), their exist
 
 \paragraph{Example}
 Determine if a number is divisible by 60. The Chinese Reminder theorem tells us that a number is divisible by 60 if and only if it is divisible by 3 and 20.
+
+
+\section{Combinatorics}
+\subsection{Combinations}
+
+If you have $n$ elements, the number of sets of $k$ distinct elements that you can form is
+\begin{equation}
+    \left( \begin{array}{c}
+        n \\ k
+    \end{array} \right)
+     = \frac{n!}{k!(n-k)!}
+\end{equation}
+
+\subsection{Combinations with repetitions}
+
+Suppose now that you can take several times the same element. Again, the order of the elements has no importance. The number of sets with repetitions that can be formed becomes
+\begin{equation}
+    \left(\begin{array}{c}
+        n+k-1 \\ k
+    \end{array} \right)
+     = \frac{(n+k-1)!}{k!(n-1)!}
+\end{equation}
