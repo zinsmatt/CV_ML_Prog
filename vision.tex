@@ -922,3 +922,178 @@ Filtering correspond to one sensor and sensor fusion is used in case of multiple
     \end{split}
 \end{equation}
 \underline{Warning}: This is not a probability, thus $p(z)$ can be $>1$.
+
+\subsubsection{}{Conditional probability}
+
+\begin{equation}
+    p(x, z) = p(z|x)p(x)
+\end{equation}
+\begin{equation}
+    p(z|x) = \frac{p(z, x)}{p(x)}
+\end{equation}
+
+\subsubsection{Total probability}
+\begin{equation}
+    p(z) = \sum_{x} p(x, z) = \sum_{x} p(z|x)p(x)
+\end{equation}
+\begin{equation}
+    p(x) = \int_x p(x, z)dx = \int_x p(z|x)p(x)dx
+\end{equation}
+
+\subsubsection{Operations on Gaussian}
+Suppose $x \sim \mathcal{N}(\mu_x, \Sigma_x)$ and $y \sim \mathcal{N}(\mu_y, \Sigma_y)$ and $x$ and $y$ are independent, then $z = Ax+By$ has:
+\begin{equation}
+    \mu_z = A\mu_x + B\mu_y
+\end{equation}
+\begin{equation}
+    \Sigma_z = A \Sigma_x A^T + B \Sigma_y B^T
+\end{equation}
+
+In case $y=f(x)$, where $f$ is a non-linear function, it is possible to approximate with an affine function to keep it Gaussian.
+
+\subsection{Bayesian Statistics}
+In frequentist statistics, the unknown quantity $\theta$ is considered unknown but deterministic and the answer is the most probale element. In contrast, with a Bayesian approach the answer is a probability distribution.
+\subsubsection{Bayesian method}
+\begin{enumerate}
+    \item Modeling: what we known about the prior $p(\theta)$ and how measurements $y$ relate to $\theta$: $p(y|\theta)$.
+    \item Measurement Update: find $p(\theta|y)$, the posterior distribution.
+    \item Decision Making: Given the posterior $p(\theta|y)$ and a loss function, compute an optimal decision.
+\end{enumerate}
+
+\subsubsection{Likelihood}
+$p(y|\theta)$, since $y$ is observed we often see it as a function of $\theta$. It is also noted $l(\theta|y) = p(y|\theta)$.
+
+\subsubsection{Prior} This is what we known about $\theta$ before observing $y$. It is noted $p(\theta)$.
+
+\subsubsection{Posterior}
+\begin{equation}
+    p(\theta|y) = \frac{p(y|\theta)p(\theta)}{p(y)} \propto p(y|\theta)p(\theta) = l(\theta|y)p(\theta)
+\end{equation}
+This is what we known after observing $y$.
+\begin{equation}
+    Posterior \propto likelihood \times prior
+\end{equation}
+The unknown scale factor is deterministic and unique because it normalizes the probability. So, it is often ignored.
+
+\subsubsection{Frequentist approach} In a frequentist approach, we would not consider the prior. We would choose the Maximum Likelihood Estimate (MLE)
+\begin{equation}
+    \hat{\theta} = \arg\max_{\theta} l(\theta|y)
+\end{equation}
+
+\subsubsection{Decision Making and Loss functions}
+Once we have our posterior distribution $p(\theta|y)$, how do we choose an optimal estimate $\hat{\theta}$. Optimal Bayesian decision:
+\begin{equation}
+    \hat{\theta} = \arg\min_{a} E[C(\theta, a) | y]
+\end{equation}
+where $C(\theta, a)$ is a cost function and $a$ is a decision. Different cost functions can be chosen depdending on what we want to minmize. 
+
+\paragraph{Minimum Mean Squared Error (MMSE)}
+\begin{equation}
+    C(\theta, a) = \norm{\theta-a}^2_2 = (\theta-a)^T(\theta-a)
+\end{equation}
+The mean quadratic error is $E[C(\theta, a)|y]$ and is minimum for $\hat{\theta}=\bar{\theta}$
+\begin{equation}
+    \hat{\theta} = \arg\min_{a} E[C(\theta, a)|y] = \bar{\theta}
+\end{equation}
+
+Choosing MMSE gives the estimator that minimizes the squared error.
+
+\paragraph{Maximum a Posteriori (MAP)}
+0-1 loss function
+\begin{equation}
+    C(\theta, a) = -\delta(\theta-a) = \left\{\begin{array}{c}
+        -\infty \quad if \: a=\theta  \\   
+        0 \quad otherwise
+    \end{array}\right.
+\end{equation}
+This cost function penalizes equally a small error and a large error. Only the correct estimate is infinitely better. This lead to the following estimate:
+\begin{equation}
+    \hat{\theta} = \arg\min_{a} -p(\theta|y) |_ {\theta=a}
+\end{equation}
+\begin{equation}
+    \hat{\theta} = \arg\max_{\theta} p(\theta|y)
+\end{equation}
+
+Choosing MAP gives the estimator that is correct as often as possible.
+
+
+\underline{Note:} If the posterior $p(\theta|y)$ is Gaussian, both cost functions are equivalent because the maximum and the mean are the same.
+
+\subsection{Filtering, Smoothing, Prediction}
+\includegraphics[scale=0.5]{content/prediction_filtering_smoothing.png}
+
+\subsection{Discrete State Space model}
+\subsubsection{Motion / Process model}
+\begin{equation}
+    x_k = f_{k-1}(x_{k-1}, q_{k-1}) \Leftrightarrow p(x_k | x_{k-1}) 
+\end{equation}
+where $q_{k-1}$ is a 0-mean noise.
+
+\subsubsection{Sensor / Measurement model}
+\begin{equation}
+    y_k = h_k(x_k, r_k) \Leftrightarrow p(y_k | x_k)
+\end{equation}
+
+\subsubsection{Conditional independence and Markov process}
+\begin{equation}
+    \left\{\begin{array}{c}
+        x_k = f_{k-1}(x_{k-1}, q_{k-1}) \\
+        y_k = h_k(x_k, r_k)
+    \end{array}\right.
+\end{equation}
+If we know that $x_k{k-1}$ (i.e $x_k$), the only uncertainty comes from $q_{k-1}$ (i.e $r_k$), then we have:
+\begin{equation}
+    \left\{\begin{array}{c}
+        p(x_k|x_{0\dots k-1}, y_{1\dots k-1}) = p(x_k|x_{k-1}) \\
+        p(y_k|x_{0\dots k}, y_{1 \dots k-1}) = p(y_k | x_k) 
+    \end{array}
+    \right.
+\end{equation}
+
+\subsection{Bayesian Network}
+\includegraphics[scale=0.5]{content/Bayesian_Network.png}
+
+
+Bayesian Network can be used to represent dependencies.
+
+
+
+\subsection{Optimal Filtering}
+The objective is to find: $p(x_k | y_{1 \dots k})$.
+
+The solution is to recursively compute: $p(x_k | y_{1\dots k})$ from $p(x_{k-1} | y_{1\dots k-1})$.
+
+\includegraphics[scale=0.5]{content/Optimal_Filtering.png}
+
+\subsubsection{Prediction}
+
+\begin{align}
+    p(x_k|y_{1\dots k-1}) = &  \int p(x_k, x_{k-1} | y_{1\dots k-1}) dx_{k-1} \\
+     & \int p(x_k | x_{k-1}, y_{1\dots k-1}) p(x_{k-1} | y_{1\dots k-1}) dx_{k-1} \\
+    p(x_k|y_{1\dots k-1}) =  & \int \underbrace{p(x_k | x_{k-1})}_\text{motion model} \underbrace{p(x_{k-1} | y_{1 \dots k-1})}_\text{posterior at previous timestep} dx_{k-1}
+\end{align}
+
+
+This is called the \textit{Chapman-Kolmogorov} equation.
+\subsubsection{Measurement Update}
+\begin{equation}
+    p(x_k|y_{1\dots k}) = p(x_k | y_k, y_{1\dots k-1}) = \frac{p(y_k | x_k, y_{1\dots k-1}) p(x_k | y_{1\dots k-1})}{p(y_k | y_{1\dots k-1})}
+\end{equation}
+\begin{equation}
+    p(x_k| y_{1\dots k}) \propto \underbrace{p(y_k | x_k)}_\text{likelihood} \underbrace{p(x_k | y_{1\dots k-1})}_\text{predicted density as prior}
+\end{equation}
+
+\underline{Note:} The prediction and measurement update are general solution to any filtering problem.
+
+\subsubsection{Filtering}
+Summary:
+\begin{equation}
+\begin{array}{cccc}
+    Prior & Predicted \: Density & Likelihood & Updated \: Density \\
+    p(x_k|y_{1\dots k-1}) & p(x_k|y_{1\dots k-1}) & p(y_k | x_k) & p(x_k|y_{1\dots k})
+\end{array}
+\end{equation}
+
+\begin{equation}
+    posterior(updated\:density) \propto prior(pred\:density) \times likelihood
+\end{equation}
