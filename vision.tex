@@ -901,11 +901,11 @@ A smart way to choose the initial two images to use is by trying to find a homog
 
 
 
-\section{Sensor Fusion and Non-linear Filtering}
+\chapter{Sensor Fusion and Non-linear Filtering}
 
 Filtering correspond to one sensor and sensor fusion is used in case of multiple sensors, but they are equivalent.
 
-\subsection{Probability theory}
+\section{Probability theory}
 \textbf{Probability Mass Function (PMF)} is used for discrete random variables and we have:
 \begin{equation}
 \begin{split}
@@ -951,7 +951,7 @@ Suppose $x \sim \mathcal{N}(\mu_x, \Sigma_x)$ and $y \sim \mathcal{N}(\mu_y, \Si
 
 In case $y=f(x)$, where $f$ is a non-linear function, it is possible to approximate with an affine function to keep it Gaussian.
 
-\subsection{Bayesian Statistics}
+\section{Bayesian Statistics}
 In frequentist statistics, the unknown quantity $\theta$ is considered unknown but deterministic and the answer is the most probale element. In contrast, with a Bayesian approach the answer is a probability distribution.
 \subsubsection{Bayesian method}
 \begin{enumerate}
@@ -1019,6 +1019,8 @@ Choosing MAP gives the estimator that is correct as often as possible.
 
 \underline{Note:} If the posterior $p(\theta|y)$ is Gaussian, both cost functions are equivalent because the maximum and the mean are the same.
 
+\section{Filtering}
+
 \subsection{Filtering, Smoothing, Prediction}
 \includegraphics[scale=0.5]{content/prediction_filtering_smoothing.png}
 
@@ -1085,8 +1087,7 @@ This is called the \textit{Chapman-Kolmogorov} equation.
 
 \underline{Note:} The prediction and measurement update are general solution to any filtering problem.
 
-\subsubsection{Filtering}
-Summary:
+\subsubsection{Summary of Filtering}
 \begin{equation}
 \begin{array}{cccc}
     Prior & Predicted \: Density & Likelihood & Updated \: Density \\
@@ -1097,3 +1098,77 @@ Summary:
 \begin{equation}
     posterior(updated\:density) \propto prior(pred\:density) \times likelihood
 \end{equation}
+
+\section{Kalman Filter}
+
+It recursively computes
+\begin{equation}
+    \left\{\begin{array}{c}
+        p(x_k |y_{1\dots k-1}) = \mathcal{N}(x_k; \hat{x}_{k|k-1}, P_{k|k-1} \\
+        p(x_k|y_{1\dots k}) = \mathcal{N}(x_k; \hat{x}_{k|k}, P_{k|k}) 
+    \end{array}\right.
+\end{equation}
+
+$p(x_m|y_{1\dots m})$ is Gaussian $\forall m, n$. Thus, we only need to compute their mean and covariance.
+
+\begin{equation}
+    \left\{\begin{array}{c}
+        x_k = A_{k-1} x_{k-1} + q_{k-1} \\
+        y_k = H_k x_k + r_k
+    \end{array}\right.
+\end{equation}
+abnd $x_0 \sim \mathcal{N}(\bar{x_0}, P_{0|0})$.
+
+\subsection{Prediction Step}
+\begin{equation}
+\left\{\begin{array}{c}
+        \hat{x}_{k|k-1} = A_{k-1} \hat{x}_{k-1}  \\
+        P_{k|k-1} = A_{k-1} P_{k-1|k-1} A_{k-1}^T + Q_{k-1}
+    \end{array}\right.
+\end{equation}
+
+\subsection{Update Step}
+\begin{equation}
+    \left\{\begin{array}{c}
+        \hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k v_k \\
+        P_{k|k} = P_{k|k-1} - K_k S_k K_k^T
+    \end{array}\right.
+\end{equation}
+where:
+\begin{equation}
+    K_k = P_{k|k-1} H_k^T S_k^{-1}
+\end{equation}
+\begin{equation}
+    v_k = (y_k - H_k \hat{x}_{k|k-1})
+\end{equation}
+\begin{equation}
+    S_k = H_k P_{k|k-1} H_k^T + R_k
+\end{equation}
+
+are the \textbf{Kalman gain}, the \textbf{innovation} and the \textbf{innovation covariance} respectively.
+The innovation captures the new information in $y_k$ and the Kalman gain determines how much we should trust it.
+\underline{Note:} Here $\hat{x}_{k|k}$ is both the MMSE and MAP estimator as it is a Gaussian distribution.
+
+\subsection{Fine Tuning}
+Tuning the filter parameters is very important to get good results.
+A well performing filter should satisfy:
+\begin{equation}
+    E[x_k - \hat{x}_{k|k}] = 0
+\end{equation}
+To verify it, we need to have access to the ground-truth values $x_k$ which is rarely the case.
+
+
+The innovation should satisfy:
+\begin{itemize}
+    \item have 0 mean: $p(v_k|y_{1\dots k-1}) = \mathcal{N}(v_k; 0, S_k)$
+    \item be decorrelated across timesteps: $Cov(v_k, v_{k-l}) = \left\{\begin{array}{cc}
+        Cov(v_k) & if\:l=0\\
+        0 & otherwise
+    \end{array}\right.$
+\end{itemize}
+
+A key aspect of tuning a Kalman Filter is the ratio between the process noise ($Q$) and the measurement noise ($R$).
+\begin{equation}
+    \frac{\norm{Q}}{\norm{R}}
+\end{equation}
+
