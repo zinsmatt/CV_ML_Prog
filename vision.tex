@@ -145,7 +145,7 @@ With this normalization, all ellipses can be expressed by 5 parameters: $p = [A,
     \end{array} \right]
      - 
     \left[\begin{array}{c}
-        -y_i \\
+        -y_i^2 \\
         \vdots
     \end{array} \right]
 \end{equation}
@@ -985,7 +985,7 @@ Once we have our posterior distribution $p(\theta|y)$, how do we choose an optim
 \begin{equation}
     \hat{\theta} = \arg\min_{a} E[C(\theta, a) | y]
 \end{equation}
-where $C(\theta, a)$ is a cost function and $a$ is a decision. Different cost functions can be chosen depdending on what we want to minmize. 
+where $C(\theta, a)$ is a loss function and $a$ is a decision. Different loss functions can be chosen depdending on what we want to minmize. 
 
 \paragraph{Minimum Mean Squared Error (MMSE)}
 \begin{equation}
