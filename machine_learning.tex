@@ -189,3 +189,42 @@ It is important to note a few things:
     \item If $N \rightarrow \infty$, the posterior variance $\sigma_N^2$ goes to zero and the posterior distribution becomes infinitely peaked around the maximum likelihood solution.
     \item For a finite number of observations $N$, if we take a prior variance very large $\sigma_0^2 \rightarrow \infty$, the posterior mean reduces to the maximum likelihood and the posterior variance reduces to $\sigma_N^2 = \sigma^2/N$.
 \end{itemize}
+
+\subsection{Dirichlet distribution}
+
+The Dirichlet distribution is a \textbf{continuous multivariate} probability distribution. It is the \textbf{multivariate generalization} of the \textbf{Beta} distribution.
+
+Its support is the set of K-dimensional vectors $x$ with $x_i \in [0, 1]$ and $\norm{x} = 1$. In other words, its is a categorical distribution over the probability simplex.
+This support can also be seen as a probability distribution. This means we can imagine that the Dirichlet gives a distribution over probabilities.
+
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\paragraph{Note on simplex}
+\begin{itemize}
+    \item For $K=2$, the unit simplex is the triangle formed by $(0, 0), (1, 0), (0, 1)$ and the probability simplex is the line from $(1, 0)$ to $(0, 1)$.
+    \item For $K=3$, the unit simplex is the tetrahedron formed by $(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)$ and the probability simplex is the triangular face between $(1, 0, 0), (0, 1, 0), (0, 0, 1)$.
+\end{itemize}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+
+Its parameters is a K-dimensional vector $\alpha$ of non-negative numbers.
+
+
+\begin{equation}
+    Dir(\mu|\alpha) = \frac{\Gamma(\alpha_0)}{\Gamma(\alpha_1) \hdots \Gamma(\alpha_K)} \prod_{k=1}^K \mu_k^{\alpha_k-1}
+\end{equation}
+
+
+where $\Gamma(x)$ is the Gamma functions and $\alpha_0 = \sum_{k=1}^K \alpha_k$.
+
+\includegraphics[scale=0.25]{content/Dirichlet_distribution.png}
+
+
+If we ignore the normalization factor, we ca see the the parameters $\alpha_i$ controls the distribution. In particular:
+\begin{itemize}
+    \item if $\alpha_i = 1$, all $\mu_k^{\alpha_k-1}$ will be $1$ and thus the distribution is \textbf{uniform}.
+    \item if some $\alpha_i$ becomes large, they will create some bumps (like on the 4th image)
+    \item if some $\alpha_i$ becomes small (less than 1 and tend to 0), the probability will go to infinity (this is because all $\mu_k \in [0, 1]$ (like on the 2nd image).
+\end{itemize}
+
+
+The Dirichlet distribution is linked to the multinomial one, the same way the Beta distribution is linked to the binomiale one.

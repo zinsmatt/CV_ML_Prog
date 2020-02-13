@@ -35,6 +35,24 @@ Another classic method for distribution estimation with neural networks.
 \subsection{Gaussian Process}
 A Gaussian Process is a random function that is defined by its mean and covariance functions.
 
+\section{Bayesian Deep Learning}
+
+\subsection{Two kind of uncertainties}
+In Bayesian modeling, there are two main kinds of uncertainties that we can model: \textit{epistemic} and \textit{aleatoric} uncertainty.
+
+\paragraph{Epistemic uncertainty} accounts for uncertainty in the model parameters which captures the ignorance of the model for a certain input data. This uncertainty can be reduced if more training data are given.
+
+\paragraph{Aleatoric uncertainty} captures the noise in the input data, for example, sensor noise. This type of noise cannot be reduced even if more data were collected.
+Aleatoric uncertainty can further be categorized into:
+\begin{itemize}
+    \item \textit{homoscedastic uncertainty}, uncertainty which stays constant for different inputs
+    \item \textit{heteroscedastic uncertainty}, uncertainty which depends on the input data
+\end{itemize}
+
+
+
+
+
 \section{Loss Functions}
 
 \subsection{L1 Loss}
@@ -50,7 +68,7 @@ It creates a criterion that measures the mean squared error between the input $x
 \end{equation}
 
 \subsection{Cross-entropy Loss}
-This criterion combines the \textit{Log Softmax} and the \textit{NLL Loss} into a single loss. 
+This loss function is used for classification. It combines the \textit{Log Softmax} and the \textit{NLL Loss} into a single loss. 
 This criterion expects a class index $class$ as target value and the input $x$ should contain raw, unnormalized scores for each class.
 \begin{equation}
     loss(x, class) = -\log \left(\frac{\exp(x_{class})}{\sum_j \exp(x_j)}\right)
