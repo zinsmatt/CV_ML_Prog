@@ -1172,3 +1172,57 @@ A key aspect of tuning a Kalman Filter is the ratio between the process noise ($
     \frac{\norm{Q}}{\norm{R}}
 \end{equation}
 
+\section{Motion Models}
+
+\subsection{Discretization}
+A motion model is usually expressed in continuous time by differential equations. However, all the filtering techniques presented here works in discrete time. We thus need to discretize our motion models.
+
+Given a \textbf{continuous-time} motion model
+
+\begin{equation}
+    \mathbf{\dot{x}}(t) = \mathbf{\Tilde{a}}(\mathbf{x}(t)) + \mathbf{\Tilde{q}}(t)
+\end{equation}
+
+we would like to find a \textbf{discrete-time} motion model
+\begin{equation}
+    \mathbf{x}_k = \mathbf{a}(\mathbf{x}_{k-1}) + \mathbf{q}_{k-1}
+\end{equation}
+where the discrete sequence is sampled from the continuous one, $\mathbf{x}_k = \mathbf{x}(kT)$.
+
+
+Suppose $\mathbf{\dot{x}}(t) = \mathbf{\tilde{A}}\mathbf{x}(t) + \mathbf{\tilde{q}}(t)$ where $\mathbf{\tilde{A}}$ is a constant matrix, how should we select $\mathbf{A}_ {k-1}$ in $\mathbf{x}_k = \mathbf{A}_{k-1} \mathbf{x}_{k-1} + \mathbf{q}_{k-1}$ ? There are two ways to do this discretization:
+
+\subsubsection{Euler discretization}
+
+Euler discretization is based on the approximate expression of the derivative of $x(t)$.
+
+\begin{equation}
+    \dot{x}(t) \approx \frac{x(t+T)-x(t)}{T}
+\end{equation}
+which gives
+\begin{align}
+    \mathbf{x}(t+T) & \approx \mathbf{x}(t) + T \mathbf{\dot{x}}(t) \\
+     \mathbf{x}(t+T)  & \approx \mathbf{x}(t) + T \mathbf{\Tilde{a}}(\mathbf{x}(t)) + T \mathbf{\Tilde{q}}(t)
+\end{align}
+
+And thus the transition matrix $\mathbf{X}_{k-1}$ is given by 
+\begin{equation}
+    \mathbf{A}_{k-1} = \mathbf{I} + T \mathbf{\Tilde{A}}
+\end{equation}
+
+\subsubsection{Analytical solution of linear systems}
+
+Suppose a linear system: $\dot{x}(t) = Ax(t) + b$ where $A$ is a constant matrix and $b$ is a constant vector. We found the exact solution of $x(t+T)$ as:
+\begin{equation}
+    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}t)\mathbf{x}(t) + \int_t^{t+T} exp(\mathbf{A}(t+T-\tau)) \mathbf{\tilde{q}}(\tau) d\tau
+\end{equation}
+
+Using the Taylor expansion of $exp(\mathbf{A}t)$, we get:
+\begin{equation}
+    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}T)\mathbf{x}(t) + \left( IT + \frac{\mathbf{A}T^2}{2} + \frac{\mathbf{A}^2T^3}{3!} + \dots \right) \tau
+\end{equation}
+
+Finally, the transition matrix can be written as: 
+\begin{equation}
+    \mathbf{A}_{k-1} = exp(T \mathbf{\tilde{A}})
+\end{equation}
