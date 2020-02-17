@@ -1212,15 +1212,14 @@ And thus the transition matrix $\mathbf{X}_{k-1}$ is given by
 
 \subsubsection{Analytical solution of linear systems}
 
-Suppose a linear system: $\dot{x}(t) = Ax(t) + b$ where $A$ is a constant matrix and $b$ is a constant vector. We found the exact solution of $x(t+T)$ as:
+This method gives the exact solution for linear systems:
 \begin{equation}
-    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}t)\mathbf{x}(t) + \int_t^{t+T} exp(\mathbf{A}(t+T-\tau)) \mathbf{\tilde{q}}(\tau) d\tau
+    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}T)\mathbf{x}(t) + \int_t^{t+T} exp(\mathbf{A}(t+T-\tau)) \mathbf{\tilde{q}}(\tau) d\tau
 \end{equation}
 
 Using the Taylor expansion of $exp(\mathbf{A}t)$, we get:
 \begin{equation}
-    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}T)\mathbf{x}(t) + \left( IT + \frac{\mathbf{A}T^2}{2} + \frac{\mathbf{A}^2T^3}{3!} + \dots \right) \tau
-\end{equation}
+    \mathbf{x}(t+T) = exp(\mathbf{\tilde{A}}T)\mathbf{x}(t) + \left( IT + \frac{\mathbf{A}T^2}{2} + \frac{\mathbf{A}^2T^3}{3!} + \dots \right) \mathbf{\tilde{q}}(t) \end{equation}
 
 Finally, the transition matrix can be written as: 
 \begin{equation}
