@@ -228,3 +228,35 @@ If we ignore the normalization factor, we ca see the the parameters $\alpha_i$ c
 
 
 The Dirichlet distribution is linked to the multinomial one, the same way the Beta distribution is linked to the binomiale one.
+
+
+\subsection{Regularization and link with prior distribution}
+The notion of regularization can be illustrated by a very simple example of linear regression. It consists of shrinking (l2), or even zeroing (l1), some of the parameters.
+
+\paragraph{Equivalence}
+Optimizing model weights to minimize a squared error loss function with L2 regularization is equivalent to finding the weights that are the most likely under a posterior distribution evaluated using Bayes rule, with a zero-mean independent Gaussian weights prior.
+
+\begin{equation}
+L = \underbrace{\sum_{n=1}^N (\mathbf{y}^{(n)}-f_\mathbf{w}(\mathbf{x}^{(n)}))^2}_{original\;L2\;function} \;+ \underbrace{\lambda \sum_{i=1}^{K} w_i^2}_{regularization}
+\end{equation}
+
+Recall the multivariate Gaussian distribution is
+\begin{equation}
+    \mathcal{N}(\mathbf{x}; \mu, \Sigma) = \frac{1}{(2\pi)^{D/2} |\Sigma|^{1/2}} e^{\left(-\frac{1}{2} (\mathbf{x}-\mu)^T \Sigma^{-1}(\mathbf{x}-\mu)\right)}
+\end{equation}
+
+Using Bayes rule, we have $posterior \propto likelihood \times prior$.
+\begin{align}
+    p(\mathbf{w}|\mathcal{D}) & \propto p(\mathcal{D}|\mathbf{w}) p(\mathbf{w}) \\
+     & \propto \prod_n^N \mathcal{N}(y^{(n)}; f_\mathbf{w}(\mathbf{x}^{(n)}), \sigma_y^2) \prod_{i=1}^K \mathcal{N}(\mathbf{w}; 0, \sigma_\mathbf{w}^2)
+\end{align}
+
+The left part of the equation is the \textbf{likelihood} of observing the data. It has the form of a product of Gaussian because we assumed an additional zero-mean independent Gaussian noise on our observations.
+
+The right part is the \textbf{prior} distribution of our weights (or parameters). This is a multivariate zero-mean uncorrelated Gaussian. Because the weights are independent, it is possible to write it as a product.
+
+If we take the negative log-probability, we get
+\begin{align}
+    -\log[p(\mathbf{w}|\mathcal{D})] & = -\sum_ {n=1}^{N} \log[\mathcal{N}(y^{(n)}; f_{\mathbf{w}}(\mathbf{x}^{(n)}), \sigma_y^2)] - \sum_{i=1}^K \log[\mathcal{N}(w_i; 0, \sigma_{\mathbf{w}}^2)] + const \\
+    & = \frac{1}{2\sigma_y^2} \sum_{n=1}^N (y^{(n)} - f_{\mathbf{w}}(\mathbf{x}^{(n)}))^2 + \frac{1}{2\sigma_{\mathbf{w}}^2} \sum_{i=1}^K w_i^2 + const
+\end{align}
