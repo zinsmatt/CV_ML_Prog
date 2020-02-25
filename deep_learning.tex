@@ -49,9 +49,16 @@ Aleatoric uncertainty can further be categorized into:
     \item \textit{heteroscedastic uncertainty}, uncertainty which depends on the input data
 \end{itemize}
 
+\section{Layers}
+\subsection{Conv}
+The spatial size of the input changes as follows:
 
-
-
+\begin{equation}
+    H_{out} = \left\lfloor \frac{H_{in}+2\times padding[0] - dilation[0]\times (kernel\_size[0]-1)-1}{stride[0]}+1 \right\rfloor
+\end{equation}
+\begin{equation}
+    W_{out} = \left\lfloor \frac{W_{in}+2\times padding[1]-dilation[1]\times(kernel\_size[1]-1)-1}{stride[1]}+1 \right\rfloor
+\end{equation}
 
 \section{Loss Functions}
 

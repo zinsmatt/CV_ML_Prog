@@ -229,8 +229,22 @@ If we ignore the normalization factor, we ca see the the parameters $\alpha_i$ c
 
 The Dirichlet distribution is linked to the multinomial one, the same way the Beta distribution is linked to the binomiale one.
 
+\subsection{Laplace distribution}
+A Laplace distribution is a continuous probability distribution.
+A random variable has a $Laplace(\mu, b)$ distribution if its probability density function is
 
-\subsection{Regularization and link with prior distribution}
+\begin{equation}
+    f(x|\mu, b) = \frac{1}{2b}exp^{-\frac{|x-\mu|}{b}}
+\end{equation}
+
+\begin{equation}
+    E[x] = \mu
+\end{equation}
+\begin{equation}
+    Var[x] = 2b^2
+\end{equation}
+
+\subsection{Link between regularization and prior distributions}
 The notion of regularization can be illustrated by a very simple example of linear regression. It consists of shrinking (l2), or even zeroing (l1), some of the parameters.
 
 \paragraph{Equivalence}
@@ -260,3 +274,9 @@ If we take the negative log-probability, we get
     -\log[p(\mathbf{w}|\mathcal{D})] & = -\sum_ {n=1}^{N} \log[\mathcal{N}(y^{(n)}; f_{\mathbf{w}}(\mathbf{x}^{(n)}), \sigma_y^2)] - \sum_{i=1}^K \log[\mathcal{N}(w_i; 0, \sigma_{\mathbf{w}}^2)] + const \\
     & = \frac{1}{2\sigma_y^2} \sum_{n=1}^N (y^{(n)} - f_{\mathbf{w}}(\mathbf{x}^{(n)}))^2 + \frac{1}{2\sigma_{\mathbf{w}}^2} \sum_{i=1}^K w_i^2 + const
 \end{align}
+
+We can ignore the constant and the scale factors, because they do not change the location of the minima (the constant does nothing and the multiplicator just scales the learning rate)
+We can easily see that the negative log-posterior probability is equivalent to the squared-error loss function with L2 regularization.
+
+\paragraph{L1 Regularization}
+Similarly, it can be shown that a L1 regularization term is equivalent to a \textit{Laplace} prior distribution on the weights.
