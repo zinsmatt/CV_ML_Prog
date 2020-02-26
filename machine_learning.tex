@@ -206,7 +206,7 @@ This support can also be seen as a probability distribution. This means we can i
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 
 
-Its parameters is a K-dimensional vector $\alpha$ of non-negative numbers.
+A Dirichlet distribution has a K-dimensional vector $\alpha$ of non-negative numbers as parameter. The probability of a K-dimensional vector is given by
 
 
 \begin{equation}
@@ -215,6 +215,16 @@ Its parameters is a K-dimensional vector $\alpha$ of non-negative numbers.
 
 
 where $\Gamma(x)$ is the Gamma functions and $\alpha_0 = \sum_{k=1}^K \alpha_k$.
+
+\begin{equation}
+    E[\mu_i] = \frac{\alpha_i}{\alpha_0}
+\end{equation}
+\begin{equation}
+    Mode[\mu] = \left( \frac{\alpha_1-1}{\alpha_0-n}, \dots, \frac{\alpha_i-1}{\alpha_0-n},  \dots, \frac{\alpha_n-1}{\alpha_0-n}  \right)
+\end{equation}
+\begin{equation}
+    Var[\mu_i] = \frac{\alpha_i(\alpha_0-\alpha_i)}{\alpha_0^2(\alpha_0+1)}
+\end{equation}
 
 \includegraphics[scale=0.25]{content/Dirichlet_distribution.png}
 
