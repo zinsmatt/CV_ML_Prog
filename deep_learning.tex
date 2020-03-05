@@ -5,6 +5,10 @@
 \subsection{Dropout}
 The dropout method has been used for a long time in order to avoid over-fitting. Networks nodes (i.e. neurons) are disable randomly during training time so that with each training step, a different subset of the network architecture is evaluated and adjusted. This can be seen as a regularization and proves to result in better generalization in many cases.
 
+\subsection{Dropout and scaling}
+Setting a dropout rate greater than 0, will change the magnitude of the values passed through the network. Consider a simple example of two layers of size 10 and 1. If all activations are approximately 1, the output should be around 10. Now, if we add a dropout with rate 0.5, the output will be around 5. This means that the activation will be too big at test time and need to be rescaled. To avoid an additional operation at test time, this is done at training time with a scaling factor of $\frac{1}{1-p}$.
+
+
 \subsection{Dropout Sampling (Monte-Carlo)}
 Randomly turns off network node during inference. This results in a random prediction with some complex probability distributions every time an input value is passed to the network. The empirical distribution or parameter estimates can be used to obtain, for example, a mean value and a confidence measure in terms of the distributional variance. We expect that the empirical variance is low here there was an abundance of training data since all network subsets had the opportunity to learn in these areas. However, in areas where there was no training data to learn from, the network behavior is not controllable so we expect a high variance among the different network subsets.
 
