@@ -1266,18 +1266,14 @@ Without $\mathbf{\tilde{q}}(t)$, the velocity would never changed, which is not 
 \end{equation}
 
 
-A real-life example of this motion model could be to model the motion of a car on a highway. The speed is mostly constant, but can change a little bit.
+A real-life example of this motion model could be to model the motion of a car at cruising speed on a highway. The speed is mostly constant, but can change a little bit.
 
 \subsubsection{Discrete-time model}
-Discretizing the model
+How to select $\mathbf{A}_{k-1}$ in
 \begin{equation}
-\mathbf{\dot{x}}(t) = \underbrace{\left[\begin{array}{cc}
-    0 & 1 \\
-    0 & 0
-\end{array}\right]}_{\mathbf{\tilde{A}}} \mathbf{x}(t) + \mathbf{\tilde{q}}(t)
+    \mathbf{x}_k = \mathbf{A}_{k-1} \mathbf{x}_{k-1} + \mathbf{q}_{k-1}
 \end{equation}
-
-can be done either with the Euler method or the analytical solution.
+This can be done either with the Euler method or the analytical solution.
 \paragraph{Euler Method}
 \begin{align}
     \mathbf{A}_{k-1} & = I + T \mathbf{\tilde{A}} \\
@@ -1306,3 +1302,113 @@ can be done either with the Euler method or the analytical solution.
 
 All the terms of $\mathbf{\tilde{A}}$ to a power greater than 1 are zeros. Thus, we get the same result with the Euler method and the exact solution. This is normal because the Euler approximation just considers the time derivative of the position constant over time, which is truely the case in this constant-velocity model.
 
+We get the final discrete-time motion model:
+
+\begin{equation}
+    \left[\begin{array}{c}
+        p_k \\
+        v_k 
+    \end{array}\right] = \left[\begin{array}{cc}
+        1 & T \\
+        0 & 1
+    \end{array}\right]\left[\begin{array}{c}
+        p_{k-1} \\
+        v_{k-1} 
+    \end{array}\right] + \tilde{q}(t)
+\end{equation}
+
+\subsection{Constant-Acceleration model (CA)}
+
+Suppose we have the following state vector $\mathbf{x}(t) = [p(t) \; v(t) \; a(t)]^T$.
+
+\subsubsection{Continuous-time model}
+The continuous time model is:
+
+\begin{equation}
+    \mathbf{\dot{x}}(t) = 
+    \left[ \begin{array}{c}
+        \dot{p}(t) \\
+        \dot{v}(t) \\
+        \dot{a}(t)
+    \end{array}\right] = \underbrace{\left[\begin{array}{ccc}
+        0 & 1 & 0 \\
+        0 & 0 & 1 \\
+        0 & 0 & 0
+    \end{array}\right]}_{\mathbf{\tilde{A}}} \left[\begin{array}{c}
+        p(t) \\
+        v(t) \\
+        a(t)
+    \end{array}\right] + \mathbf{\tilde{q}}(t)
+\end{equation}
+
+Again, the noise term is added to allow slight changes in the acceleration. It is a white noise only applied to the acceleration. Here, a real example could be when a car is entering the highway and accelerating up to the cruising speed.
+
+\begin{equation}
+    \mathbf{\dot{x}}(t) = 
+    \left[ \begin{array}{c}
+        \dot{p}(t) \\
+        \dot{v}(t) \\
+        \dot{a}(t)
+    \end{array}\right] = \underbrace{\left[\begin{array}{ccc}
+        0 & 1 & 0 \\
+        0 & 0 & 1 \\
+        0 & 0 & 0
+    \end{array}\right]}_{\mathbf{\tilde{A}}} \left[\begin{array}{c}
+        p(t) \\
+        v(t) \\
+        a(t)
+    \end{array}\right] + \left[\begin{array}{c}
+        0 \\
+        0 \\
+        1 
+    \end{array}\right]\mathbf{\tilde{q}}_c(t)
+\end{equation}
+
+\subsubsection{Discrete-time model}
+How to select $\mathbf{A}_{k-1}$ in
+\begin{equation}
+    \mathbf{x}_k = \mathbf{A}_{k-1} \mathbf{x}_{k-1} + \mathbf{q}_{k-1}
+\end{equation}
+This can be done either with the Euler method or the analytical solution.
+
+\paragraph{Euler method}
+\begin{align}
+    \mathbf{A}_{k-1} & = I + T \mathbf{\tilde{A}} \\
+              &= \left[\begin{array}{ccc}
+                  1 & T & 0 \\
+                  0 & 1 & T \\
+                  0 & 0 & 1
+              \end{array}\right]
+\end{align}
+
+\paragraph{Analytical solution}
+\begin{align}
+    \mathbf{A}_{k-1} & = exp(\mathbf{\tilde{A}}T) \\
+    &= I + \mathbf{\tilde{A}}T + \frac{\mathbf{\tilde{A}}^2T^2}{2} + \dots \\
+    &= \left[\begin{array}{ccc}
+        1 & T & T^2/2 \\
+        0 & 1 & T \\
+        0 & 0 & 1
+        \end{array}\right]
+\end{align}
+
+$\mathbf{\tilde{A}}$ to a power of 3 or over is 0 and thus can be ignored.
+
+
+We get the final discrete-time motion model:
+
+\begin{equation}
+    \left[\begin{array}{c}
+        p_k \\
+        v_k \\
+        a_k
+    \end{array}\right] = \left[\begin{array}{ccc}
+        1 & T & T^2/2 \\
+        0 & 1 & T \\
+        0 & 0 & 1
+    \end{array}\right]\left[\begin{array}{c}
+        p_{k-1} \\
+        v_{k-1} \\
+        a_{k-1}
+    \end{array}\right] + \tilde{q}(t)
+\end{equation}
