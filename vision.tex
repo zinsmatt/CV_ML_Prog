@@ -1226,3 +1226,83 @@ Finally, the transition matrix can be written as:
 \begin{equation}
     \mathbf{A}_{k-1} = exp(T \mathbf{\tilde{A}})
 \end{equation}
+
+\subsection{Constant-Velocity model (CV)}
+Suppose we have the following state vector $\mathbf{x}(t) = [p(t) \; v(t)]^T$.
+
+\subsubsection{Continuous-time model}
+The continuous time model is:
+
+\begin{equation}
+    \mathbf{\dot{x}}(t) = 
+    \left[ \begin{array}{c}
+        \dot{p}(t) \\
+        \dot{v}(t)
+    \end{array}\right] = \underbrace{\left[\begin{array}{cc}
+        0 & 1 \\
+        0 & 0
+    \end{array}\right]}_{\mathbf{\tilde{A}}} \left[\begin{array}{c}
+        p(t) \\
+        v(t)
+    \end{array}\right] + \mathbf{\tilde{q}}(t)
+\end{equation}
+
+Without $\mathbf{\tilde{q}}(t)$, the velocity would never changed, which is not realistic in real applications. That is why, we add this noise term that allow the velocity to change a bit. This noise is actually a white-noise only applied to the velocity.
+\begin{equation}
+    \mathbf{\dot{x}}(t) = 
+    \left[ \begin{array}{c}
+        \dot{p}(t) \\
+        \dot{v}(t)
+    \end{array}\right] = \underbrace{\left[\begin{array}{cc}
+        0 & 1 \\
+        0 & 0
+    \end{array}\right]}_{\mathbf{\tilde{A}}} \left[\begin{array}{c}
+        p(t) \\
+        v(t)
+    \end{array}\right] + \left[\begin{array}{c}
+        0 \\
+        1
+    \end{array}\right]\mathbf{\tilde{q_c}}(t)
+\end{equation}
+
+
+A real-life example of this motion model could be to model the motion of a car on a highway. The speed is mostly constant, but can change a little bit.
+
+\subsubsection{Discrete-time model}
+Discretizing the model
+\begin{equation}
+\mathbf{\dot{x}}(t) = \underbrace{\left[\begin{array}{cc}
+    0 & 1 \\
+    0 & 0
+\end{array}\right]}_{\mathbf{\tilde{A}}} \mathbf{x}(t) + \mathbf{\tilde{q}}(t)
+\end{equation}
+
+can be done either with the Euler method or the analytical solution.
+\paragraph{Euler Method}
+\begin{align}
+    \mathbf{A}_{k-1} & = I + T \mathbf{\tilde{A}} \\
+              &= \left[\begin{array}{cc}
+                  1 & 0 \\
+                  0 & 1
+              \end{array}\right] + T \left[\begin{array}{cc}
+                  0 & 1 \\
+                  0 & 0
+              \end{array}\right] \\
+              &= \left[\begin{array}{cc}
+                  1 & T \\
+                  0 & 1
+              \end{array}\right]
+\end{align}
+
+\paragraph{Analytical solution}
+\begin{align}
+    \mathbf{A}_{k-1} & = exp(\mathbf{\tilde{A}}T) \\
+    & = I + \mathbf{\tilde{A}}T + \frac{\mathbf{\tilde{A}}^2T^2}{2} + \dots \\
+    & = \left[\begin{array}{cc}
+        1 & T \\
+        0 & 1
+    \end{array}\right]
+\end{align}
+
+All the terms of $\mathbf{\tilde{A}}$ to a power greater than 1 are zeros. Thus, we get the same result with the Euler method and the exact solution. This is normal because the Euler approximation just considers the time derivative of the position constant over time, which is truely the case in this constant-velocity model.
+
