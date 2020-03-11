@@ -53,6 +53,107 @@ Aleatoric uncertainty can further be categorized into:
     \item \textit{heteroscedastic uncertainty}, uncertainty which depends on the input data
 \end{itemize}
 
+\subsection{Weight Uncertainty in Neural Networks}
+\subsubsection{Terminology}
+
+\begin{equation}
+    P(\mathbf{w}|\mathcal{D}) = \frac{P(\mathcal{D}|\mathbf{w})P(\mathbf{w})}{P(\mathcal{D})} = \frac{P(\mathcal{D}|\mathbf{w})P(\mathbf{w})}{\int P(\mathcal{D}|\mathbf{w})P(\mathbf{w}) d\mathbf{w}}
+\end{equation}
+
+\begin{itemize}
+    \item $\mathbf{w}$ are the weights of the network.
+ \item $\mathcal{D}$ is the training data.
+\item $P(\mathbf{w}|\mathcal{D})$ is the \textbf{posterior} probability of $\mathbf{w}$. This is the probability distribution of the weights given an observed set of data.
+\item $P(\mathcal{D}|\mathbf{w})$ is the \textbf{likelihood} of $\mathbf{w}$. This is the probability distribution of the data given fixed weights.
+\item $P(\mathbf{w})$ is the \textbf{prior} probability on $\mathbf{w}$. This represents our initial beliefs on the distribution of the weights, before observing any data.
+\item $P(\mathcal{D})$ is the \textbf{evidence} (also called marginal likelihood) of the data.
+\end{itemize}
+
+
+Log-probabilities are often used instead because they provide better numerical stability. Probabilities are usually small numbers and multiplication of them can be imprecise. Taking the log gives large negative values and transforms products into additions.
+
+
+\subsubsection{Bayesian Inference and Prediction}
+
+A neural network can be viewed as a probabilistic model $P(y|x, \mathbf{w})$. In case of classification, this corresponds to the softmax output.
+
+The normal approach of training a neural network by updating weights using gradient descent seeks to find the weights which best explain the data. This can be seen as learning the weights which maximize the likelihood $P(\mathcal{D}|\mathbf{w})$, through \textbf{Maximum Likelihood Estimation (MLE)}.
+
+\begin{align}
+    \mathbf{w}^{MLE} &= \arg\max_{\mathbf{w}} P(\mathcal{D}|\mathbf{w}) \\
+    & = \arg\max_{\mathbf{w}} \prod_i P(y_i|x_i, \mathbf{w})
+\end{align}
+
+This is the frequentist perspective, where the weights are fixed and the data is viewed as a random variable. 
+Instead, we can view the data as being fixed and the model weights as being a random variable. We can train to maximize the posterior $P(\mathbf{w}|\mathcal{D})$ via \textbf{Maximum a Posteriori (MAP)} learning. This is equivalent to MLE objective  with an additional regularization term using the prior distribution of the weights:
+
+\begin{align}
+    \mathbf{w}^{MAP} &= \arg\max_{\mathbf{w}} P(\mathbf{w}|\mathcal{D}) \\
+    & = \arg\max_{\mathbf{w}} P(\mathcal{D}|\mathbf{w})P(\mathbf{w}) \\
+    & = \arg\max_{\mathbf{w}} \log P(\mathcal{D}|\mathbf{w}) + \log P(\mathbf{w})
+\end{align}
+
+Having obtained the MLE or MAP weights, prediction can be simply using the model with the learned weights fixed:
+
+\begin{equation}
+    P(\hat{y}|\hat{x}) = P(\hat{y}|\hat{x}, \mathbf{w}^{MLE})
+\end{equation}
+
+
+If we consider the entire posterior distribution of the weights $P(\mathbf{w}|\mathcal{D})$, the predictive distribution becomes a weighted expectation over all possible values for $\mathbf{w}$.
+
+\begin{align}
+    P(\hat{y}|\hat{x}) & = \mathbb{E}_{p(\mathbf{w}|\mathcal{D})}[P(\hat{y}|\hat{x}, \mathbf{w})] \\
+    & = \int P(\hat{y}|\hat{x}, \mathbf{w})P(\mathbf{w}|\mathcal{D}) d\mathbf{w}
+\end{align}
+
+\subsubsection{Variational Inference}
+Unfortunately, this predictive distribution is generally intractable for neural networks. Also, even if the prior $P(\mathbf{w})$ is something that we can choose and the likelihood $P(\mathcal{D}|\mathbf{w})$ can be computed, the posterior $P(\mathbf{w}|\mathcal{D})$ is intractable. More precisely, the evidence $P(\mathcal{D})$ in the denominator requires integration over the very high-dimensional space of weights and has no analytical solution:
+
+\begin{align}
+    P(\mathcal{D}) & = \int P(\mathcal{D}, \mathbf{w}) d\mathbf{w} \\
+    & = \int P(\mathcal{D}|\mathbf{w}) P(\mathbf{w}) d\mathbf{w}
+\end{align}
+
+
+Thus, we need to employ approximations. \textbf{Variational inference} constructs a new distribution $q(\mathbf{w}|\theta)$ over the weights $\mathbf{w}$ and parameterized by $\theta$, that approximates the true posterior $P(\mathbf{w}|\mathcal{D})$. It finds the parameters $\theta$ which minimizes the \textit{KL}-divergence between $q$ and $P$.
+\begin{equation}
+    \theta^* = \arg\min_{\theta}KL[q(\mathbf{w}|\theta) || P(\mathbf{w}|\mathcal{D}]
+\end{equation}
+
+The KL-divergence is an information-theoric measure of the difference between distributions. This is not a true distance metric because it is not symmetric.
+
+\begin{equation}
+    KL[q(x)||P(x)] = \int q(x) \log \frac{q(x)}{P(x)}dx
+\end{equation}
+
+We substitute this into the previous equation and reformulat it to only depend on values we know:
+
+\begin{align}
+    \theta^* &= \arg\min_{\theta} \int q(\mathbf{w}|\theta) \log \frac{q(\mathbf{w}|\theta)}{P(\mathbf{w}|\mathcal{D})}d\mathbf{w} \\
+    &= \arg\min_{\theta} \int q(\mathbf{w}|\theta) \log \frac{q(\mathbf{w}|\theta)}{P(\mathcal{D}|\mathbf{w})P(\mathbf{w})} d\mathbf{w}
+\end{align}
+
+Directly from this, we can construct a cost function which will seek the minimum setting of $\theta$ for:
+
+\begin{align}
+    \mathcal{F}(\mathcal{D}, \theta) &= \int q(\mathbf{w}|\theta) \log \frac{q(\mathbf{w}|\theta)}{P(\mathbf{w})} - q(\mathbf{w}|\theta)\log P(\mathcal{D}|\mathbf{w})d\mathbf{w} \\
+    &= KL[q(\mathbf{w}|\theta)||P(\mathbf{w})] - \mathbb{E}_{q(\mathbf{w}|\theta)}[\log P(\mathcal{D}|\mathbf{w})]
+\end{align}
+
+This cost is a balance between having a variational posterior that is close tho the prior and also be able to explain the complexity of the data. The negative of this cost $-F$ is also called \textbf{Evidence Lower Bound (ELBO)}. Thus minimizing this cost function is equivalent to maximizing the ELBO. It's important to note that the variational inference is known to underestimate the uncertainty of models.
+
+
+\subsubsection{Bayes by Backprop}
+
+Calculting the expectation of the likelihood over the variational posterior is computationally prohibitive. Once more, we need to use approximation. We approximate our cost function using sampled weights:
+
+\begin{equation}
+    \mathcal{F}(\mathcal{D}, \theta) \approx \sum_{i=1}^n \log q(\mathbf{w}^{(i)}|\theta) - \log P(\mathbf{w}^{(i)}) - \log P(\mathcal{D}|\mathbf{w}^{(i)})
+\end{equation} 
+
+Using automatic differentiation as provided by frameworks such as PyTorch, we only need to worry about implementing this sampling, and setting up the cost function as above. The usual backpropagation methods can be used to train the model.
+
 \section{Layers}
 \subsection{Conv2d}
 The spatial size of the input changes as follows:
@@ -64,6 +165,17 @@ The spatial size of the input changes as follows:
     W_{out} = \left\lfloor \frac{W_{in}+2\times padding[1]-dilation[1]\times(kernel\_size[1]-1)-1}{stride[1]}+1 \right\rfloor
 \end{equation}
 
+\subsection{Softmax}
+Applying Softmax rescales the element of a tensor so that they range in [0, 1] and sum to 1. The output of this layer is often interpreted as probabilities.
+\begin{equation}
+    Softmax(x_i) = \frac{exp(x_i)}{\sum_j exp(x_j)}
+\end{equation}
+
+\subsection{LogSoftmax}
+Applying LogSoftmax additionally applies log to a softmax. The output can be interpreted as log-probabilities.
+\begin{equation}
+    LogSoftmax(x_i) = log\left(\frac{exp(x_i)}{\sum_j exp(x_j)}\right)
+\end{equation}
 \section{Loss Functions}
 
 \subsection{L1 Loss}
@@ -89,6 +201,26 @@ The losses are averaged across observations for each minibatch.
     L = \frac{1}{N} loss(x_i, class_i)
 \end{equation}
 
+\subsection{Negative Log-Likelihood Loss (NLL)}
+ It is useful to train a classification problem with C classes.
+ The input contains the log-probabilities of each class. These can be obtained from a \textit{LogSoftmax} layer.
+ 
+ \begin{equation}
+    l_n(x_n, y_n) = -x_{n, y_n} 
+ \end{equation}
+which is just the negative log-probability of the ground-truth class.
+For a batch of size N, the total loss can be:
+\begin{equation}
+    L = \left\{ \begin{array}{ll}
+        \frac{1}{N}\sum_{n=1}^{N} l_n &\;if\;reduction="mean" \\
+        \sum_{n=1}^{N} l_n &\;if\;reduction="sum"
+    \end{array}\right.
+\end{equation}
+
+Optionally, it is possible to specify weights $w_i$ to each class. The loss becomes
+\begin{equation}
+    l_n(x, y) = -w_{y_n} x_{n, y_n}
+\end{equation}
 \section{Yolo}
 Basic idea for the Yolo (v1, v2, v3) object detection algorithm.
 
