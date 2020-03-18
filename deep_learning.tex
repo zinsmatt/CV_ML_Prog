@@ -221,6 +221,19 @@ Optionally, it is possible to specify weights $w_i$ to each class. The loss beco
 \begin{equation}
     l_n(x, y) = -w_{y_n} x_{n, y_n}
 \end{equation}
+
+\section{Brier score}
+The Brier score is a \textbf{proper score function} that measures the accuracy of probabilistic predictions. It can be applied to tasks where the output is a set of probabilities corresponding to mutually-exclusive discrete outcomes.
+
+It is defined as the \textit{mean squared error} between the predicted probabilities and the one-hot encoded ground-truth.
+
+\begin{equation}
+    Brier = \frac{1}{N}\sum_{t=1}^{N} (f_t - y_t)^2
+\end{equation}
+
+where $f_t$ is the probability predicted for the class $t$ and $y_t$ is either 0 or 1.
+
+
 \section{Yolo}
 Basic idea for the Yolo (v1, v2, v3) object detection algorithm.
 
