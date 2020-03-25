@@ -1,4 +1,5 @@
 \part{Programming}
+\chapter{Algorithme}
 
 \section{Arithmetic}
 
@@ -48,3 +49,15 @@ Suppose now that you can take several times the same element. Again, the order o
     \end{array} \right)
      = \frac{(n+k-1)!}{k!(n-1)!}
 \end{equation}
+
+
+\chapter{C++}
+
+\section{Keywords}
+
+\subsection{nodiscard}
+\begin{lstlisting}
+[[nodiscard]] int f();
+struct [[nodiscard]] my_struct { };
+\end{lstlisting}
+If a function is declared \textbf{nodiscard} or if it returns an enum or class declared \textbf{nodiscard} by value, the compiler is encouraged to \textbf{raise a warning} if the returned value is not used.
