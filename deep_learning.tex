@@ -1,6 +1,6 @@
 \part{Deep Learning}
 
-\section{Neural Networks}
+\section{Techniques for uncertainties (old)}
 
 \subsection{Dropout}
 The dropout method has been used for a long time in order to avoid over-fitting. Networks nodes (i.e. neurons) are disable randomly during training time so that with each training step, a different subset of the network architecture is evaluated and adjusted. This can be seen as a regularization and proves to result in better generalization in many cases.
@@ -153,6 +153,115 @@ Calculting the expectation of the likelihood over the variational posterior is c
 \end{equation} 
 
 Using automatic differentiation as provided by frameworks such as PyTorch, we only need to worry about implementing this sampling, and setting up the cost function as above. The usual backpropagation methods can be used to train the model.
+
+
+\section{Recent architectures}
+
+\subsection{Components}
+
+\paragraph{Convolutions} A convolution layer is composed of a set of convolutional kernels. Each kernel is applied through a convolution to a small block of the image, named the receptive field.
+
+
+\paragraph{Pooling} Feature motifs, which result as an output of convolution operation, can occur at different locations in the image. Once features are extracted, its exact location becomes less important as long as its approximate position relative to others is preserved. Pooling or down-sampling is an interesting local operation. It sums up similar information in the neighborhood of the receptive field and outputs the dominant response within this local region.
+The use of pooling operation helps to extract a combination of features, which are invariant to translational shifts and small distortions
+
+\paragraph{Activation functions} serve as a decision function and the selection of an appropriate activation function can accelerate the learning process. Usually ReLU is a good choice.
+
+\paragraph{Batch Normalization} is used to address the issues related to the internal covariance shift within feature-maps. The internal covariance shift is a change in the distribution of hidden units' values, which slows down the convergence and requires careful initialization of parameters. BN unifies the distribution of feature-map values by setting them to \textbf{zero mean} and \textbf{unit variance}. Furthermore, it smoothens the flow of gradient and acts as a regularization factor, which helps generalization.
+
+\paragraph{Dropout} introduces regularization within the network by randomly skipping some units. This random dropping of some connections or units produces several thinned network architectures, and finally, one representative network is selected with small weights.This selected architecture is then considered as an approximation of all of the proposed networks.
+
+\paragraph{Fully connected layers} is mostly used at the end of the network. It is a global operation, which globally analyzes the output of the preceding layers. It makes a non-linear combination of selected features.
+
+% IMAGES 
+
+CNN architectures can be broadly categorized into 7 classes:
+\begin{enumerate}
+    \item Spatial Exploitation: where convolutions of different sizes were compared
+    \item Depth based: deeper networks seemed to learn more information
+    \item Multi-path: 
+    
+    \item Width based:
+    
+    \item Feature-map Exploitation
+    
+    \item Channel Boosting
+    
+    
+    \item Attention based
+\end{enumerate}{}
+
+\subsubsection{Spatial Exploitation}
+As convolutional operation considers the neighborhood (locality) of input pixels, therefore different levels of correlation can be explored by using different filter sizes. Different sizes of filters encapsulate different levels of granularity; usually, small size filters extract fine-grained and large size extract coarse-grained information.
+Different studies suggested that CNN can perform well both on coarse and fine-grained details.
+
+\textbf{Exemples}: LeNet, AlexNet, ZfNet, VGG, GoogleNet
+
+\subsubsection{Depth based}
+Deep CNN architectures are based on the assumption that with the increase in depth, the network can better approximate the target function with a number of nonlinear mappings and more enriched feature hierarchies.
+
+\textbf{Exemples}: ResNet, Highway Networks, Inception-V3, Inception-V4 and Inception-ResNet
+
+\subsubsection{Multi-path}
+Training a deep network is a challenging task because they may suffer from performance degradation, gradient vanishing or explosion problems, which are not caused by overfitting but instead by an increase in the depth. Multiple paths or shortcut connections can systematically connect one layer to another by skipping some intermediate layers to allow specialized flow of information across the layers. These path s also try to solve the vanishing gradient problem by making gradient accessible to lower layers. Different types of shortcut connections exist: zero-padded projection-based, skip connections, 1x1 connections, ...
+
+\textbf{Exemples}: ResNet, Highway Networks, DenseNet, ... 
+
+\paragraph{ResNet}
+ResNet is composed of residual blocks that can consist of several hidden units. The input of the block goes through a second path and is usually added just before the last activation function (see figure \label{fig:resnet}).
+Learning is thus based on a residual information. ResNet suggested that residual functions are easier to optimize.
+
+Compared to Highway Network, these connections are data-independent and parameter-free.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{content/resnet.png}
+    \caption{Residual block of a ResNet}
+    \label{fig:resnet}
+\end{figure}
+
+\paragraph{DenseNet}
+also tried to solve the vanishing gradient problem. The problem with ResNet is that it explicitly preserves information through the additive identity transformation of the second path of the block. Thus many layers may contribute very little. The idea of DenseNet is to connect each preceeding layer to the next coming layer by concatenation. With this, the network may gain the ability to differentiate between information that is added to the network and information that is preserved. However, due to its structure, DenseNet is quite expensive in term of parameters. 
+Apparently, because each layer has a direct access to gradient through the loss function, it acts as a regularization and reduces overfitting on tasks with smaller training sets.
+
+
+\subsubsection{Width based}
+After the trend of very deep network, some studies also reported that the width of the network as also important. One major problem of deep architectures is that some layers may not learn useful features. To tackle this problem, the focus shifted from deep and narrow architectures towards thin and wide architectures.
+
+\textbf{Exemples}: Wide ResNet, Pyramidal Net, Xception, ...
+
+\subsubsection{Feature-Map (Channel) exploitation}
+In CNN, features are dynamically selected  by tuning the weights associated with a kernel (mask). However, some of the feature-maps can have a very little or no role in object discrimination. Enormous feature sets may create an effect of noise and thus lead to over-fitting of the network.
+Here, they suggest that a good selection of feature-maps can play an important role in improving the generalization of the network.
+
+\paragraph{Sequeeze and excitation Networks}
+Teh squeeze block generates feature-map-wise statistics by suppressing the spatial infromation. Then, excitation operation assigns weights to the feature-maps.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{content/squeeze_excitation.png}
+    \caption{Squeeze and Excitation for feature-maps selection}
+    \label{fig:squeeze_excitation}
+\end{figure}
+
+
+\subsubsection{Channel Boosting}
+Image representation plays an important role in determining the performance of an algorithm. The learning of a CNN relies in this input representation and the lack of diversity and the absence of class discernable information may affect its performance.
+Channel boosting of adding some extra channels (known as auxiliary channels) to the input data. The extra channels are usually obtained through auxiliary deep generative models and then exploited in the deep discriminative models. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{content/channel_boosting.png}
+    \caption{Channel Boosting}
+    \label{fig:channel_boosting}
+\end{figure}
+
+
+\subsubsection{Attention based}
+Their goal is to choose which patch is the most important area in an image. Focusing on these relevant features plays a significant role in image localization and recognition. This is true both for the channels but also spatially.
+
+\textbf{Exemples}: Residual Attention Neural Network, Convolutional Block Attention Module
 
 \section{Layers}
 \subsection{Conv2d}
