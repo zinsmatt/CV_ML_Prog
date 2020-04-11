@@ -382,3 +382,93 @@ Basic idea for the Mask R-CNN object detection and segmentation
  \caption{Mask R-CNN}
 \end{algorithm}
 
+\section{Automatic Differentiation}
+
+
+Different methods can be used to compute gradients:
+\begin{itemize}
+    \item manually working out the derivative and coding them: complicated and very long to do
+    \item \textit{numerically differentation} using finite difference approximation: unstable and expensive
+    \item \textit{symbolic differentiation} using tools such as Maple or SymPy: limited to small functions because the size of the expression grows exponentially
+    \item \textit{automatic differentiation}: much better
+\end{itemize}
+
+
+
+There are two ways to do Autodiff (AD): a forward mode and a reverse mode
+
+\subsection{Forward Mode}
+
+In the forward mode the derivative are passed from the input to the output. For example, if we want to compute the derivative wrt. $x_1$, we compute each intermediate derivative:
+
+\begin{equation}
+    \dot{v}_i = \frac{\delta v_i}{\delta x_1}
+\end{equation}
+
+This generalizes to compute the Jacobian of a function $f: \mathbb{R}^n \xrightarrow{} \mathbb{R}$.
+To compute the derivative wrt. input $x_i$, we set its derivative to one $\dot{x}_i = 1$ and the derivative of all other inputs to $\dot{x}_{j(j \ne i)} = 0$. This can give a complete column of the Jacobian. To compute the full Jacobian $n$ passes are required.
+
+Furthermore, forward mode AD is very efficient for Jacobian-vector product. In that case, we just need to set the input derivatives to $r$, as the final matrix-vector product is just a weigthed-sum of the Jacobian columns.
+
+\begin{equation}
+    \mathbf{J}_f r = \left[\begin{array}{ccc}
+        \frac{\delta y_1}{\delta x_1} & \hdots & \frac{\delta y_1}{\delta x_n}  \\
+        \vdots & \ddots & \vdots \\
+        \frac{\delta y_m}{\delta x_1} & \hdots & \frac{\delta y_m}{\delta x_n}
+    \end{array}\right]
+    \left[\begin{array}{c}
+        r_1 \\
+        \vdots \\
+        r_n 
+    \end{array}\right]
+\end{equation}
+
+In conclusion, forward mode AD, is very useful for functions with a small numbers of inputs wrt. outputs.
+
+
+
+\subsubsection{Dual Numbers}
+Mathematically, forward AD can be viewed as evaluating functions using dual numbers, which can be defined as truncated Taylor series of the form
+\begin{equation}
+    v + \dot{v}\epsilon
+\end{equation}
+where $v, \dot{v} \in \mathbb{R}$ and $\epsilon$ is a nilpotent number, such that $\epsilon^2 = 0$ and $\epsilon \ne 0$.
+
+The idea is to use dual numbers as data structures for carrying the tangent value together with the primal.
+The chain rules works as expected on this representation.
+
+
+\subsection{Reverse Mode}
+
+Reverse mode propagates derivated backward from the outputs to the inputs. This is done by complementing each intermediat variable $v_i$ with an adjoint
+\begin{equation}
+    \bar{v_i} = \frac{\delta y_j}{\delta v_i}
+\end{equation}
+which represents the sensitivity of a considered output $y_j$ wrt. the changes in $v_i$.
+
+In a first phase, a forward pass is done to compute the intermediate variables $v_i$ and record the dependencies in the computational graph through a book-keeping procedure.
+Then, the chain rule is used for back-propagating the derivatives.
+
+
+In this mode, computing the derivative of an output wrt. each input is done in one pass. This is much better than the forward mode. However, a new pass is required for each output.
+
+Similarly to the forward mode, the reverse mode can be used to compute the transpose Jacobian-vector product directly by setting $\bar{y} = r$.
+
+\begin{equation}
+    \mathbf{J}_f r = \left[\begin{array}{ccc}
+        \frac{\delta y_1}{\delta x_1} & \hdots & \frac{\delta y_m}{\delta x_1}  \\
+        \vdots & \ddots & \vdots \\
+        \frac{\delta y_1}{\delta x_n} & \hdots & \frac{\delta y_m}{\delta x_n}
+    \end{array}\right]
+    \left[\begin{array}{c}
+        r_1 \\
+        \vdots \\
+        r_m
+    \end{array}\right]
+\end{equation}
+
+
+
+In conclusion, reverse mode AD is more efficient when the number of inputs is larger than the number of outputs.
+
+This is why it is the solution used in neural network, where $n$ is usually large and $m=1$.
