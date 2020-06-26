@@ -405,7 +405,7 @@ In the forward mode the derivative are passed from the input to the output. For 
     \dot{v}_i = \frac{\delta v_i}{\delta x_1}
 \end{equation}
 
-This generalizes to compute the Jacobian of a function $f: \mathbb{R}^n \xrightarrow{} \mathbb{R}$.
+This generalizes to compute the Jacobian of a function $f: \mathbb{R}^n \xrightarrow{} \mathbb{R}^m$.
 To compute the derivative wrt. input $x_i$, we set its derivative to one $\dot{x}_i = 1$ and the derivative of all other inputs to $\dot{x}_{j(j \ne i)} = 0$. This can give a complete column of the Jacobian. To compute the full Jacobian $n$ passes are required.
 
 Furthermore, forward mode AD is very efficient for Jacobian-vector product. In that case, we just need to set the input derivatives to $r$, as the final matrix-vector product is just a weigthed-sum of the Jacobian columns.
@@ -425,6 +425,13 @@ Furthermore, forward mode AD is very efficient for Jacobian-vector product. In t
 
 In conclusion, forward mode AD, is very useful for functions with a small numbers of inputs wrt. outputs.
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{content/Forward_AD_example.png}
+    \caption{Forward AD of $y=f(x_1, x_2)=ln(x_1)+x_1x_2-sin(x_2)$ evaluated at $(x_1, x_2)=(2, 5)$. We set $\dot{x_1}=1$ and $\dot{x_2}=0$ to compute $\frac{\delta y}{\delta x_1}$}
+    \label{fig:my_label}
+\end{figure}
 
 
 \subsubsection{Dual Numbers}
