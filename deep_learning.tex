@@ -462,7 +462,7 @@ In this mode, computing the derivative of an output wrt. each input is done in o
 Similarly to the forward mode, the reverse mode can be used to compute the transpose Jacobian-vector product directly by setting $\bar{y} = r$.
 
 \begin{equation}
-    \mathbf{J}_f r = \left[\begin{array}{ccc}
+    \mathbf{J}_f^T r = \left[\begin{array}{ccc}
         \frac{\delta y_1}{\delta x_1} & \hdots & \frac{\delta y_m}{\delta x_1}  \\
         \vdots & \ddots & \vdots \\
         \frac{\delta y_1}{\delta x_n} & \hdots & \frac{\delta y_m}{\delta x_n}

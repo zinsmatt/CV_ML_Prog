@@ -902,6 +902,79 @@ A smart way to choose the initial two images to use is by trying to find a homog
 
 
 
+
+
+
+
+
+
+
+\section{Calibration}
+\subsection{Estimate principal point from 3 vanishing points}
+
+The orthocenter (intersection of the heights) of the triangle formed by the three vanishing points is the principal point of the camera. For that, it is required that the vanishing points have finite positions and are not at infinity.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth]{content/principal_point_from_vanishing_points.png}
+    \caption{Principal point from 3 vanishing points. OA, OB and OC are othogonal.}
+    \label{fig:principal_point_from_vanishing_points}
+\end{figure}
+
+
+
+\subsection{Estimate focal length from 2 vanishing points}
+
+It is possible to estimate the focal length of the camera from just two vanishing points, if we known the principal point. Usually, the principal point can be assumed to be at the center of the image. For example, we can calibrate the camera if a rectangle is visible in the image. Again, the vanishing points need to have finite positions. 
+
+With the \textit{geometric mean} rule, we get:
+\begin{equation}
+     h^2 = d_1 d_2
+\end{equation}
+and with Pythagoras, we get: 
+\begin{equation}
+    h^2 = d_3^2 + f^2
+\end{equation}
+Finally, we find:
+\begin{equation}
+    f = \sqrt{d_1 d_2 - d_3^2}    
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth]{content/focal_length_from_vanishing_points.png}
+    \caption{Focal length from 2 vanishing points. OA, OB and OC are othogonal. O is situated at $f$ from the image plane.}
+    \label{fig:focal_length_from_vanishing_points}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \chapter{Sensor Fusion and Non-linear Filtering}
 
 Filtering correspond to one sensor and sensor fusion is used in case of multiple sensors, but they are equivalent.
