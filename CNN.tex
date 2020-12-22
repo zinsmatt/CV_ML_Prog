@@ -1,0 +1,95 @@
+
+\chapter{CNN (Coursera)}
+
+
+\section{Convolutional Neural Networks}
+\section{Convolutional layer}
+
+
+Input tensor:
+\begin{equation}
+    n_H^{l-1} \times n_W^{l-1} \times n_c^{l-1}
+\end{equation}
+
+Output tensor:
+\begin{equation}
+    n_H^l \times n_W^l \times n_c^l
+\end{equation}
+
+The \textbf{convolutional filter} at layer $l$ has size: $f^l \times f^l \times n_c^{l-1}$ It has always the same number of channels as the input tensor. So the result after one convolutional filter is a "flat image" of size $n_H^l \times n_W^l \times 1$. Usually, a convolutional layer has $n_c^l$ filters and all the results are stacked.
+
+After a convolution the size becomes:
+
+\begin{equation}
+    n_H^l = \left\lfloor \frac{n_H^{l-1} + 2 p^l - f^l}{s^l} + 1 \right\rfloor
+\end{equation}
+\begin{equation}
+    n_W^l = \left\lfloor \frac{n_W^{l-1} + 2 p^l - f^l}{s^l} + 1 \right\rfloor
+\end{equation}
+
+where $p^l$ is the padding, $f^l$ is the filter size (usually an odd number) and $s^l$ is the stride.
+
+
+When we use \textbf{vectorized operations}, for example with mini-batches, we add a dimension at the beginning:
+\begin{equation}
+    m \times n_H^l \times n_W^l \times n_c^l
+\end{equation}
+
+
+Each convolutional filter also have a \textbf{bias}, a single number that is added on each pixel of the resulting "flat image". Thus, the full layer has $n_c^l$ biases, usually written $1 \times 1 \times n_c^l$.
+
+\section{Pooling layer}
+
+A pooling layer has no weights, but only hyper-parameters:
+\begin{itemize}
+    \item filter size $f$
+    \item stride $s$
+    \item max or average pooling
+\end{itemize}
+Note that usually there is no padding on pooling layers.
+
+The same formula as for convolution can be used to compute the output size:
+\begin{equation}
+    n_H^l = \left\lfloor \frac{n_H^{l-1} - f^l}{s^l} + 1 \right\rfloor
+\end{equation}
+\begin{equation}
+    n_W^l = \left\lfloor \frac{n_W^{l-1} - f^l}{s^l} + 1 \right\rfloor
+\end{equation}
+\begin{itemize}
+    \item A pooling layer does not change the \textbf{number of channels}. It is applied on each layer separately.
+    \item A typical size is $f=2$, $s=2$ which has the effect of dividing the width and height by 2. 
+    \item The idea for \textbf{max pooling} is: if a feature is detected in a region (a high value in the feature map), keep this high value.
+    \item The \textbf{average pooling} is more rare. It can be used at the end to pass from $h\times w \times n$ to $1 \times 1 \times n$.
+\end{itemize}
+
+
+
+\section{Fully connected Layer}
+A fully connected layer (\textbf{FC}) is defined by:
+\begin{equation}
+    \begin{split}
+        &z^i = W^i a^{i-1} + b^i \\
+        &a^i = g(z^i)
+    \end{split}
+\end{equation}
+
+\section{Neural network}
+\begin{itemize}
+    \item Usually a \textbf{convolutional layer + a pooling layer} count as 1 layer, as the pooling layer has no trainable weights.
+    \item A \textbf{common pattern} is to alternate: some conv - pool - some conv - FC - FC - FC - softmax
+
+\end{itemize}
+
+
+
+
+\section{Why convolutions}
+\begin{itemize}
+    \item \textbf{Parameter sharing:} A feature detector (for example vertical edges detector) that is useful in one part of the image can is probably also useful in an other part. With convolutions the filter can be re-used everywhere in the image.
+    \item \textbf{Sparsity of connections:} In each layer, each output value depends only on a small numbers of of inputs.
+    \item \textbf{Invariance to translation:} This is implied by convolution. The same image of a cat just translated will give very similar features.
+\end{itemize}
+
+
+
+
