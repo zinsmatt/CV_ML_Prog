@@ -91,5 +91,24 @@ A fully connected layer (\textbf{FC}) is defined by:
 \end{itemize}
 
 
+\section{Deep networks}
+\begin{itemize}
+    \item Deeper networks are able to fit more complex function
+    \item Making a network deeper does not always help because it make the training more complex.
+\end{itemize}
+
+\section{ResNet}
+\begin{itemize}
+    \item Skip connections make it very easy to learn the identity function. This means that adding a residual block doesn't harm the training of the network.
+    \item Skip connections help to avoid vanishing gradient
+\end{itemize}
+
+\includegraphics[scale=0.25]{content/resnet_block.png}
 
 
+
+\section{Technique to gain performance}
+\begin{itemize}
+    \item Ensembling: you train several networks for the same task and average the last layers
+    \item Multiple crop at test time: crop several sub-image from the test image, run the network and average the results.
+\end{itemize}
