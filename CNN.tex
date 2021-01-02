@@ -112,3 +112,23 @@ A fully connected layer (\textbf{FC}) is defined by:
     \item Ensembling: you train several networks for the same task and average the last layers
     \item Multiple crop at test time: crop several sub-image from the test image, run the network and average the results.
 \end{itemize}
+
+\section{Dimensionality Reduction}
+\subsection{PCA}
+The idea of PCA is to build $n\_e$ new independent features that are \textbf{linear combinations} of the $n\_d$ old features, so that the projections of the data on this new subspace are as close as possible to the initial data. In other words, \textbf{PCA is looking for the best linear subspace of the initial space} (described by an orthogonal basis of new features) such that the error of approximating the data by their projections on this subspace is as small as possible.
+This can be obtained using the \textbf{eigenvector decomposition}, by keeping the $n\_e$ eigen vectors associated with the largest eigen values.
+
+\subsection{Auto-Encoder}
+\begin{itemize}
+    \item With Auto-Encoders with are looking for the best encoder and decoder that \textbf{keeps the maximum of information}. With neural networks this is achieved with an iterative optimization.
+    \item If we suppose we have a \textbf{linear auto-encoder} (both the encoder and the decoder has only one linear layer, without non-linearity), this is \textbf{very close to PCA}. Several bases can be chosen to describe the same optimal subspace. PCA selects the one that maximizes the variances of the data along the first dimension and the basis is orthogonal. With neural networks there is not this orthogonality constraint. Thus, the found basis may be different.
+    \item Traditional auto-encoders are \textbf{deep and non-linear}, such that they can proceed to high dimensionality reduction while keeping the reconstruction loss low.
+    \item An encoder with "infinite power" could theoretically take N initial data points and reduce them as 1, 2, 3, ... up to N  and the associated decoder make the reverse transformation with no loss.
+    \item Dimensionality reduction with no reconstruction loss often gives a \textbf{lack of interpretability and exploitable structures} in the latent space (\textbf{lack of regularity}.
+    \item the final purpose of dimensionality reduction is not to only reduce the number of dimensions of the data but to reduce this number of dimensions \textbf{while keeping the major part of the data structure information} in the reduced representations.
+    \item For these two reasons, the dimension of the latent space and the depth of auto-encoders (that define degree and quality of compression) have to be carefully controlled and adjusted depending on the final purpose of the dimensionality reduction.
+\end{itemize}
+
+
+
+
