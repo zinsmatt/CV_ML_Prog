@@ -168,3 +168,27 @@ This can be obtained using the \textbf{eigenvector decomposition}, by keeping th
 
 Due to overfitting, the latent space of an auto-encoder can be extremely irregular (close points in latent space can give very different decoded data, some point of the latent space can give meaningless content once decoded, ...). That's why VAE are needed.
 However, GANs are more used, maybe because of their lower complexity compared to VAEs (probabilistic models + variational inference).
+
+
+\subsection{Mathematical derivation of KL in VAEs}
+
+The encoder distribution is $q(z|x) = \mathcal{N}(z|\mu(x),\Sigma(x))$, where $\Sigma=diag(\sigma_1^2, \sigma_2^2, ..., \sigma_n^2)$.
+The latent prior is given by $p(z) = \mathcal{N}(0, I)$.
+Both are multivariate Gaussian of dimensions $n$, for which the KL divergence is:
+\begin{equation}
+    \mathcal{D_{KL}}[p_1||p_2] = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - n + Tr\{\Sigma_2^{-1}\Sigma_1\} + (\mu_2 - \mu_1)^T \Sigma_2^{-1} (\mu_2-\mu_1) \right]
+\end{equation}
+
+For VAEs, $\mu_1 = \mu$, $\mu_2 = 0$, $\Sigma_1 = \Sigma$, $\Sigma_2 = I$, which gives:
+\begin{equation}
+    \begin{split}
+        \mathcal{D_{KL}}[q(z|x)||p(z)] &= \frac{1}{2} \left[ \log \frac{1}{|\Sigma|} - n + Tr\{I^{-1}\Sigma\} + (0 - \mu)^T I^{-1} (0-\mu) \right] \\
+        &= \frac{1}{2} \left[ -\log |\Sigma| - n + Tr\{\Sigma\} + \mu^T\mu \right] \\
+        &= \frac{1}{2} \left[ -\log \prod_i \sigma_i^2 - n + \sum_i \sigma_i^2 + \sum_i \mu_i^2 \right] \\
+        &= \frac{1}{2} \left[ -\sum_i \log\sigma_i^2 - n + \sum_i \sigma_i^2 + \sum_i \mu_i^2 \right] \\
+        \mathcal{D_{KL}}[q(z|x)||p(z)] &= \frac{1}{2} \left[ -\sum_i(\log\sigma_i^2 + 1) + \sum_i \sigma_i^2 + \sum_i \mu_i^2 \right] \\
+    \end{split}
+\end{equation}
+
+This is simple to implement in PyTorch.
+
