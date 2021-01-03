@@ -130,5 +130,41 @@ This can be obtained using the \textbf{eigenvector decomposition}, by keeping th
 \end{itemize}
 
 
+\subsection{Generative model}
+\begin{itemize}
+    \item To have good generative properties, the latent space must be \textbf{regular} (well organized)
+    \item Auto-encoders are trained to minimize the reconstruction error, \textbf{no matter how the latent space is organized}.
+    \item Auto-encoders with high degrees of freedom can encoder and decode with no information loss, however this leads to \textbf{severe overfitting}, implying that some points of the latent space will give meaningless content once decoded.
+    \item Due to overfitting, the latent space of an auto-encoder can be extremely irregular (close points in latent space can give very different decoded data, some point of the latent space can give meaningless content once decoded, ...).
+\end{itemize}
 
+\subsection{Variational Auto-Encoder}
+\begin{itemize}
+    \item  It can be defined as being an auto-encoder whose training is \textbf{regularised} to avoid overfitting and ensure that the latent space has \textbf{good properties} that enable generative process.
+    \item Instead of encoding an input as a single point, we encode it as a \textbf{distribution} over the latent space.
+    \item Its loss is composed of a \textbf{reconstruction term} (on the final layer) and a \textbf{regularisation term} (on the latent space).
+    \item That regularisation term is expressed with the \textbf{Kullback-Leibler divergence} between the returned distribution and a standard Gaussian distribution.
+    \item The \textbf{regularity} expected from the latent space can be expressed through two main properties:
+    \begin{itemize}
+        \item \textbf{continuity}: two close points in the latent space should give similar contents once decoded (not totally different).
+        \item \textbf{completeness}: for a chosen distribution, a points sampled from the latent space should give "meaniningfull" content once decoded.
+    \end{itemize}
+    \item The regularization term should avoid to have punctual distributions (tiny variances) or very different means. 
+    
+    \includegraphics[scale=0.2]{content/latent_space_regularisation.png}
 
+    \item The encoder is composed of two functions $g$ and $h$, that share the first layers and predict respectively the \textbf{mean} and \textbf{variances}.
+    \item The covariance matrix of the latent space distribution is assumed to be diagonal for simplicity.
+    \item The loss equation can be derived using a probabilistic approach and \textbf{variational inference}.
+    \item The \textbf{reparametrisation trick} is used ot make gradient descent possible despite the random sampling, using the fact that a distribution $\mathcal{N}(g, H)$ can be written as $z=h(x)M+g(x)$ with $M\sim\mathcal{N}(0, I)$.
+
+    \includegraphics[scale=0.2]{content/reparametrisation_trick.png}
+    
+    \includegraphics[scale=0.2]{content/final_vae_architecture.png}
+
+\end{itemize}
+\subsection{Conclusion}
+\href{https://towardsdatascience.com/understanding-variational-autoencoders-vaes-f70510919f73}{https://towardsdatascience.com/understanding-variational-autoencoders-vaes-f70510919f73}
+
+Due to overfitting, the latent space of an auto-encoder can be extremely irregular (close points in latent space can give very different decoded data, some point of the latent space can give meaningless content once decoded, ...). That's why VAE are needed.
+However, GANs are more used, maybe because of their lower complexity compared to VAEs (probabilistic models + variational inference).
