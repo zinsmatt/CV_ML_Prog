@@ -194,3 +194,51 @@ This is simple to implement in PyTorch.
 
 \includegraphics[scale=1]{content/KL_gaussians.png}
 To get this equation, we should use the "trace trick" (see \href{https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices#The_trace_of_a_1_.C3.97_1_matrix}{trick})
+
+
+
+\section{Face Recognition}
+
+\subsection{Zero-Shot Learning}
+Begin able to learn from just one image of each person. This is not possible with traditional methods.
+
+
+\subsection{Siamese Network}
+
+\begin{itemize}
+    \item Instead, we train a \textbf{similarity function}.
+    \item This can be done with \textbf{Siamese Networks}, which predicts an 128-vector encoding for each images.
+    
+    
+    \includegraphics[scale=0.15]{content/Siamese_Network.png}
+    
+    
+    \item We want the encodings of two images of the same person to be similar and the encodings of two different person to be different. The distance between two encoding can be the L2 distance: $d(A, B) = ||f(a)-f(b)||^2$.
+    \item This can be obtained with the \textbf{Triplet Loss}. We select three images: an anchor, a positive one and a negative one and we want $||f(A)-f(P)||^2 \leq ||f(A)-f(N)||^2$. This is equivalent to:
+    \begin{equation}
+        ||f(A)-f(P)||^2 - ||f(A)-f(N)||^2 + \alpha \leq 0
+    \end{equation}
+    
+    where $\alpha$ is a \textbf{margin} to avoid the solution where all the encodings would be equal.
+    The final loss is:
+    \begin{equation}
+        \mathcal{L}(A, P, N) = max(||f(A)-f(P)||^2 - ||f(A)-f(N)||^2 + \alpha, 0)
+    \end{equation}
+    which means that as long as the distance to the negative is lower than the distance to the positive with a margin $\alpha$, the cost is 0. So this loss pushes the encodings to respect the margin, but not more.
+    \item Choosing the triplet is very important because a random choice would not work well. Usually \textbf{hard negatives} are used. These triplets are those that satisfiy: $d(A,P) \sim d(A,N)$.
+
+\end{itemize}
+
+
+\section{Neural Style Transfer}
+
+\begin{itemize}
+    \item In a Neural Networks, \textbf{shallow} filters are activated by local \textbf{low-level features} (edges, blobs, ...) whereas at \textbf{deeper} layers filters are activated by more \textbf{high-level features}, such as objects.
+    \item For \textbf{Neural Style Transfer}, we use a pretrained CNN such as VGG, take two images as input: a content image and a style image and start with a generated image randomly initialized.
+    \item We compute two losses: a content loss and a style loss:
+    \begin{itemize}
+    \item the \textbf{content loss} is the sum of square differences between the activations obtained at a certain layer of the network by passing the content image and the generated image. The layer is arbitrarily chosen (usually not too deep and not too shallow).
+    \item the \textbf{style loss} tries to mimmic the correlation of the features. It is computed as the sum of square difference between the \textbf{Gram matrices} of the a certain layer of network, obtained by passing the style image and the generated image. Usually this is repeated to several layers and we do a weighted sum. The Gram matrix computes the correlation between the channels of the feature map. It has the dimension $n_C \times n_C$. The correlation is just the dot product between two (flattened) channels of the feature maps. All combinations are computed.
+    \end{itemize}
+    \item We iteratively optimize the total cost and update the generated image pixels.
+\end{itemize}
