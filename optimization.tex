@@ -125,7 +125,7 @@ The gradient matrix of $\nabla f(x)$ is called the \textbf{Hessian} or the secon
 \end{equation}
 The Hessian matrix is symmetric.
 
-If $\nabla^2 f(x)$ is positive semidefinite on $X\subseteq\mathbb{R}^n$, then $f$ is convex on $X$.
+\textcolor{red}{If $\nabla^2 f(x)$ is positive semidefinite on $X\subseteq\mathbb{R}^n$, then $f$ is convex on $X$.}
 
 
 The second derivatives of a function give information about the curvature of the function. The curvature of $f$ in $x$ in direction $d$ is defined as
@@ -178,7 +178,7 @@ It is possible to change the formulation of the problem in order to get a better
     k(A) = ||A||\cdot||A^{-1}]||
 \end{equation}
 
-and if the matrix $A$ is symmetric positive semidefinite, the condition number is the ratio between the largest and smallest eigen values: $k(A) = \frac{\lambda_1}{\lambda_n}$.
+and if the matrix $A$ is symmetric positive semidefinite, the condition number is the ratio between the largest and smallest eigenvalues: $k(A) = \frac{\lambda_1}{\lambda_n}$.
 
 
 For a function with $\nabla^2 f(x)$ positive definite, the eigen value $\lambda_1$ corresponds to the curvature of the function in the direction of its corresponding eigen vector $d_1$. This means that the conditioning number is the ratio between the largest and the smallest curvature.
@@ -195,3 +195,225 @@ The condition number of a function can be modified by a change of variables. Let
         & = M^{-T}\nabla^2 f(x)M^{-1}
     \end{split}
 \end{equation}
+
+
+\subsection{Necessary optimality conditions}
+
+$x^*$ is a local minimum of $f:\mathbb{R}^n \rightarrow\mathbb{R}$.
+
+If $f$ is differentiable around $x^*$, then
+\begin{equation}
+    \nabla f(x^*)=0
+\end{equation}
+
+If $f$ is twice differentiable around $x^*$, then
+
+\begin{equation}
+    \nabla^2f(x^*) \geq 0 \;\;\;\; [positive\;semidefinite]
+\end{equation}
+
+These conditions are necessary but not sufficient.
+
+Also, because the second derivative is positive semidefinite, it means that the function is locally convex around $x^*$.
+All the eigenvalues of the Hessian are non-negative ($\geq 0$) and, as they represent the local curvature of the function, it means that the function is locally convex.
+
+\subsection{Sufficient optimality conditions}
+
+Consider $x^*$ and $f : \mathbb{R}^n \rightarrow \mathbb{R}$ twice differentiable,
+If
+
+\begin{equation}
+    \nabla f(x^*) = 0
+\end{equation}
+
+and
+\begin{equation}
+    \nabla^2 f(x^*) > 0 \;\;\;\;[positive\;definite]
+\end{equation}
+
+then $x^*$ is a local minimum.
+
+
+\textcolor{red}{These conditions apply only to local minima, but we cannot be sure that it is a global optimum.}
+
+
+\paragraph{Condition for global minimum}
+
+$x^*$, a local minimum of $f$, is also a global minimum if $f$ is convex (not just locally).
+$x^*$, is the unique global minimum if $f$ is strictly convex.
+
+
+\subsection{Quadratic functions}
+The second derivative of a quadratic function is constant.
+
+\begin{equation}
+    f(x) = \frac{1}{2} x^T Q x + g^Tx + c
+\end{equation}
+where $Q\in \mathbb{R}^{n\times n}$ is symmetric, $g\in \mathbb{R}^n$ and $c\in \mathbb{R}$.
+
+\begin{itemize}
+\item It is always possible to write $Q$ as a symmetric matrix, so no loss of generality.
+\item The $\frac{1}{2}$ factor is just added to simplify the calculation of the derivative.
+\end{itemize}
+
+
+\begin{equation}
+    \begin{split}
+        &\nabla f(x) = Qx+g \\
+        &\nabla^2 f(x) = Q
+    \end{split}
+\end{equation}
+
+\paragraph{Case $Q < 0$:}
+If $Q$ is not positive semidefinite, it means that at least one eigen value is negative. Thus, there exist a direction along which the function is concave and thus the result is unbounded.
+
+\paragraph{Case $Q > 0$:}
+If $Q$ is \textbf{positive definite}, all eigenvalues are strictly positive and the problem is strictly convex. The unique global minimum is obtained by solving
+\begin{equation}
+    \nabla f(x^*) = 0 \iff Qx^* + g = 0
+\end{equation}
+
+\paragraph{Case $Q \geq 0$ but $Q \not> 0$:} All eigenvalues are positive but some of them are zero. This means that the function has a 0 curvature in some direction, thus is linear in some directions.
+\begin{itemize}
+    \item Call $K$ the subspace spanned by the eigenvectors with positive eigenvalues.
+    \item Call $N$ the subspace spanned by the eigenvectors with zero eigenvalues.
+    \item The function is strictly convex in $K$.
+    \item The function is linear in $N$.
+    \item Depending on the linear part, the problem is either unbounded (slope of linear part $\neq 0$) or there are an infinite number of solutions (the linear part is flat).
+\end{itemize}
+
+\section{Newton's method}
+\subsection{Solving equations}
+Optimization algorithms heavily rely on solving the system of equations that are defined by the optimality equations.
+\begin{itemize}
+    \item If the system is linear, we can use Gaussian elimination.
+    \item If the system is nonlinear, we need to use Newton's method.
+\end{itemize}
+
+\subsubsection{Newton's method (root finding)}
+\paragraph{One variable function:}
+The method start at an initial point, calculate the tangent, solve the equation for this tangent (where does the line intersect the x-axis) and repeat.
+
+\includegraphics[width=\linewidth]{content/newton_root_finding.png}
+
+
+The method is very fast, quadratically convergence (the precision doubles at each iteration).
+
+We use the tangent approximation (model) at $\hat{x}$.
+
+\begin{equation}
+    m_{\hat{x}}(x)=F(\hat{x}) + (x-\hat{x}) F^{\prime}(\hat{x})
+\end{equation}
+
+At each iteration, find $x_{k+1}$ that solves
+\begin{equation}
+    m_{x_k}(x) = F(x_k) + (x-x_k)F^{\prime}(x_k) = 0
+\end{equation}
+
+\begin{equation}
+    \begin{split}
+        F(x_k)+(x_{k+1}-x_k)F^{\prime}(x_k) &= 0 \\
+        (x_{k+1}-x_k)F^{\prime}(x_k) &= -F(x_k) \\
+        (x_{k+1}-x_k) &= -F(x_k) / F^{\prime}(x_k) \\
+        x_{k+1} &= x_k - F(x_k) / F^{\prime}(x_k)
+    \end{split}
+\end{equation}
+
+The solution is defined only if the $F^{\prime} \neq 0$.
+Convergence is not always guaranteed. There are three conditions to guarantee the convergence:
+\begin{enumerate}
+\item F is not too nonlinear. $F^{\prime}$ is Lipschitz continuous (its Lipschitz constant $M$ is no too large).
+\item $F^{\prime}$ is not too close to 0 (because of the division): $\exists \rho>0$ such that $|F^{\prime}(x)| \geq \rho,\;\forall x$.
+\item $x_0$ is not too far from the solution: $\exists \eta>0$ such that $|x_0-x^*| < \eta$.
+\end{enumerate}
+If these three conditions are met, Newton's method is well defined (no problem with the division) and it converges \textit{q-quadratically} towards $x^*$.
+\begin{equation}
+    |x_{k+1}-x^*| \leq \frac{M}{2\rho} |x_{k}-x^*|^2
+\end{equation}
+The speed of convergence will change with $M$ (the Lipschitz constant) and $\rho$. When $M$ is small (almost linear function) the convergence is fast. When $\rho$ is large (derivative far from 0) the convergence is fast.
+\paragraph{Multiple variables}
+
+
+\begin{equation}
+\begin{split}
+    m_{\hat{x}} &= F(\hat{x}) + \nabla F(\hat{x})^T (x-\hat{x}) \\
+    &= F(\hat{x}) + J(\hat{x})(\hat{x})^T (x-\hat{x})
+\end{split}
+\end{equation}
+
+The iteration becomes
+\begin{equation}
+    x_{k+1}=x_k+d_k    
+\end{equation}
+where $d_k$ should satisfy the equation
+\begin{equation}
+    \begin{split}
+        J(x_k)d_k & = -F(x_k) \\
+        d_k & = -J(x_k)^{-1}F(x_k)
+    \end{split}
+\end{equation}
+
+    
+
+
+\subsection{Newton's local method}
+The algorithm is motivated by the necessary condition for optimality: $\nabla f(x) = 0$. This gives a system of $n$ equations, that can be solved with the Newton's method (for root finding).
+
+\includegraphics[width=\linewidth]{content/Newton_optimization.png}
+
+Newton's method for solving equations does not always work, but when it does work it is very fast.
+Even if it converges towards a point where $\nabla f(x) = 0$, we need to check the second derivative is positive definite. If the eigenvalues of the Hessian matrix are both positive and negative, the results is a saddle point, which is not a local minimum.
+
+\paragraph{Geometric interpretation}
+
+The Newton's method for solving a system of equations uses a linear approximation of the function (the tangent). In the case of optimization, the we use a quadratic model.
+
+\begin{equation}
+    m_{\hat{x}}(x)=f(\hat{x}) + (x-\hat{x})^T \nabla f(\hat{x}) + \frac{1}{2}(x-\hat{x})^T \nabla^2 f(\hat{x}) (x-\hat{x})
+\end{equation}
+
+\includegraphics[width=\linewidth]{content/newton_quadratic_model.png}
+
+The idea is to minimize the quadratic model (parabola) instead of the function.
+
+Three cases can happen:
+\begin{itemize}
+    \item The function is convex around the current point, the method converges well.
+    \item The function is convex around the current point, but it does not match at all the function around the optimum. Therefore it may generate points that are worse.
+    \item The function is concave around the current point, and thus, the quadratic model is concave and cannot be minimized.
+\end{itemize}
+
+\paragraph{Newton's point} It is the point that is obtained after applying one iteration of local Newton's method to a current iterate $x_k$.
+It is defined when $\nabla^2 f(x_k) > 0$ by
+
+\begin{equation}
+    x_N = x_k + d_N
+\end{equation}
+
+where $d_N$ verifies the Newton's equations:
+\begin{equation}
+    \nabla^2 f(x_k) d_N = -\nabla f(x_k)
+\end{equation}
+
+\paragraph{Cauchy's point} It is another interesting point, which is defined as the minimum point of the  quadratic model in the direction of minus the gradient. 
+
+It is defined when the model is convex in the direction of the gradient ($\nabla f(x_k)^T \nabla^2 f(x_k) \nabla f(x_k)~>~0$) by:
+
+\begin{equation}
+    x_C = x_k - \alpha_C \nabla f(x_k)
+\end{equation}
+where 
+\begin{equation}
+    \alpha_C = \frac{\nabla f(x_k)^T\nabla f(x_k)}{\nabla f(x_k)^T\nabla^2 f(x_k) \nabla f(x_k)}
+\end{equation}
+
+\paragraph{Conclusion} Newton's method for optimization is based using a quadratic model to locally approximate the function and choosing the minimum of this model for the next iteration. However, there are two major problems:
+\begin{itemize}
+    \item The quadratic model might be a poor approximation of the function at the optimum point, which can generate results that are worse in terms of objective functions.
+    \item If the function is locally concave at the current point, the model will be concave and cannot be minimized.
+\end{itemize}
+
+
+\section{Descent methods}
+
+
