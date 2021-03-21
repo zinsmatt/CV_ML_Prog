@@ -395,7 +395,7 @@ where $d_N$ verifies the Newton's equations:
     \nabla^2 f(x_k) d_N = -\nabla f(x_k)
 \end{equation}
 
-\paragraph{Cauchy's point} It is another interesting point, which is defined as the minimum point of the  quadratic model in the direction of minus the gradient. 
+\paragraph{Cauchy's point} It is another interesting point, which is defined as the minimum point of the quadratic model in the direction of minus the gradient. 
 
 It is defined when the model is convex in the direction of the gradient ($\nabla f(x_k)^T \nabla^2 f(x_k) \nabla f(x_k)~>~0$) by:
 
@@ -417,3 +417,46 @@ where
 \section{Descent methods}
 
 
+With descent, we first find a descent direction and then calculate how far we should go (the step size).
+The most natural direction is \textbf{minus the gradient}, because it is the steepest direction (the direction in which the function decreases the fastest). At each iterate we stop at the Cauchy's point. The problem is that the convergence is \textbf{very slow} ("zig-zag" behaviour).
+
+
+\includegraphics[width=\linewidth]{content/steepest_descent_problems.png}
+
+\textbf{Preconditionning} (a change of variables) can help a lot (1 step-convergence instead of 55 steps). Let $H_k$ a symmetric positive definite matrix. We can compute its Cholesky decomposition: $H_k=L_kL_k^T$ and select $L_k^T$ as defining the change of variable.
+The change of variable is:
+\begin{equation}
+    x^{\prime} = L_k^T x
+\end{equation}
+
+Steepest descent direction:
+\begin{equation}
+    x^{\prime}_{k+1} = x^{\prime}_ k - \alpha_k \nabla \tilde{f}(x^{\prime}_k)
+\end{equation}
+
+
+\begin{equation}
+    \begin{split}
+        \tilde{f}(x^\prime) =& f(L_k^{-T}x^\prime) \\
+        \nabla \tilde{f}(x^\prime) &= L^{-1}_k \nabla f(L_k^{-T}x^\prime) \\
+    \end{split}
+\end{equation}
+
+The descent step becomes:
+\begin{equation}
+    x_{k+1}^\prime = x_k^\prime - \alpha_k L_k^{-1} \nabla f(L_k^{-T}x_k^\prime)
+\end{equation}
+
+Going back to the original variable $x$, we finally get:
+\begin{equation}
+    x_{k+1} = x_k - \alpha_k H_k^{-1} \nabla f(x_k)
+\end{equation}
+
+This equation combines the change of variables, apply the steepest descent on that variable and come back to the original variable.
+It is guaranteed that this direction $-H_k^{-1}\nabla f(x_k)$ is a descent direction.
+
+\paragraph{Exact line search}: Some other methods exists:
+\begin{itemize}
+    \item Quadratic interpolation: Choose 3 points $a < b < c$ such that $f(b) < f(a)$ and $f(b) < f(c)$, then fit a parabola to these three points, update $a, b, c$ and repeat.
+    \item Golden Section: see course.
+\end{itemize}
