@@ -460,3 +460,110 @@ It is guaranteed that this direction $-H_k^{-1}\nabla f(x_k)$ is a descent direc
     \item Quadratic interpolation: Choose 3 points $a < b < c$ such that $f(b) < f(a)$ and $f(b) < f(c)$, then fit a parabola to these three points, update $a, b, c$ and repeat.
     \item Golden Section: see course.
 \end{itemize}
+
+
+\section{Gauss-Newton for nonlinear least-squares}
+
+A nonlinear least-squares problem can be written as
+
+\begin{equation}
+    f(x) = \frac{1}{2} \sum r_i^2(x) = r(x)^Tr(x)
+\end{equation}
+
+
+The Gauss-Newton algorithm is based on the Newton's method, but using approximations that are possible because of the specific format of the problem. (The basic Newton's method is rarely used in practice because the computation of the inverse of the Hessian matrix can be hard and slow).
+
+
+$r(x)$ is a multi-variate function representing residuals.
+
+\begin{equation}
+    r(x) = \left(\begin{array}{c}
+        r_0(x)  \\
+        r_1(x) \\
+        \vdots \\
+        r_m(x)
+    \end{array}\right)
+\end{equation}
+
+The gradient of $f(x)$ is
+\begin{equation}
+\begin{split}
+    \nabla f(x) &= \left(\begin{array}{c}
+        \frac{\delta r_0}{\delta x_0}  \\
+        \vdots  \\
+        \frac{\delta r_0}{\delta x_n}  \\
+    \end{array}\right) r_0(x) + 
+     \left(\begin{array}{c}
+        \frac{\delta r_1}{\delta x_0}  \\
+        \vdots  \\
+        \frac{\delta r_1}{\delta x_n}  \\
+    \end{array}\right) r_1(x) + \dots \\
+ &= \left(\begin{array}{ccc}
+     \frac{\delta r_0}{\delta x_0} & \dots & \frac{\delta r_m}{\delta x_0}  \\
+     \vdots & \ddots & \vdots \\
+     \frac{\delta r_0}{\delta x_n} & \dots & \frac{\delta r_m}{\delta x_n}  \\
+ \end{array}\right) \left(\begin{array}{c}
+     r_0(x) \\
+     \vdots \\
+     r_m(x) \\
+ \end{array}\right) \\
+ \nabla f(x) &= J_r(x)^T r(x)
+ \end{split}
+\end{equation}
+
+For the second derivative, we can assume $r_i(x)$ are linear (around the current points, here we use 0 for simplification).
+\begin{equation}
+    f(x) = \frac{1}{2} ||r(0) + J_rx||^2
+\end{equation}
+
+We then get:
+\begin{equation}
+\begin{split}
+    &\nabla f(x) = J_r^T(J_rx+r) = J_r^T r(x) \\
+    &\nabla^2 f(x) = J_r^TJ_r
+\end{split}
+\end{equation}
+
+The real expression of the Hessian matrix (for $r_i$ nonlinear) is given by:
+\begin{equation}
+    H = \nabla^2 f(x) = J_r^T(x)J_r(x) + \underbrace{\sum_{i=0}^m r_i(x)\nabla^2 r_i(x)}_{small}
+\end{equation}
+
+The right part involving the second derivatives of $r_i$ is just ignored.
+
+The increment ($x_{k+1}=x_k+d_k$) in Newton's algorithm statisfies the following equation:
+\begin{equation}
+    \nabla^2 f(x_k) d_k = -\nabla f(x_k)
+\end{equation}
+Replacing the first and second derivatives by their expression gives:
+\begin{equation}
+    (J_r^TJ_r)d_k = -J_r^Tr(x_k)
+\end{equation}
+\textcolor{red}{And finally, the next step in Gauss-Newton is computed by:}
+\begin{equation}
+    x_{k+1} = x_k - (J_r^TJ_t)^{-1} J_r^Tr(x_k)
+\end{equation}
+
+With this approximation, we do not need to compute the Hessian matrix which is much faster.
+
+\section{Other methods for nonlinear optimization}
+While Gauss-Newton is specifically adapted to least-squares problems, other methods exist for general nonlinear optimization.
+The \textbf{quasi-Newton} methods are also based on the basic Newton's method, but do not  require to fully compute the Jacobian and Hessian matrices. These matrices are usually approximated and updated during optimization.
+BFGS and the Davidon-Fletcher-Powell methods are example of such methods.
+
+
+\section{Levenberg-Marquardt}
+
+This is a more advanced method for solving nonlinear least-squares problems.
+
+In Gauss-Newton's ($d_k$) method the step increment statisfies:
+\begin{equation}
+    (J_r^TJ_r)d_k = -J_r^Tr(x_k)
+\end{equation}
+
+To be computed we need to inverse $J_r^TJ_r$. The statibility of this inversion will depend on the \textbf{conditioning number} of the matrix (the ratio between the largest and the smallest eigenvalues).
+Levenberg-Marquardt adds a damping factor to avoid bad conditioning:
+\begin{equation}
+    (J_r^TJ_r + \lambda I) d_k = J_r^T r(x_k)
+\end{equation}
+When this positive damping factor $\lambda$ is small the method is similar to the Gauss-Newton's method. When the factor is big it tends to work a a gradient descent method.
