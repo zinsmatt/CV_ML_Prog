@@ -529,9 +529,9 @@ The real expression of the Hessian matrix (for $r_i$ nonlinear) is given by:
     H = \nabla^2 f(x) = J_r^T(x)J_r(x) + \underbrace{\sum_{i=0}^m r_i(x)\nabla^2 r_i(x)}_{small}
 \end{equation}
 
-The right part involving the second derivatives of $r_i$ is just ignored.
+The right part involving the second derivatives of $r_i$ becomes very small if the residuals are small. Thus, it can be ignored.
 
-The increment ($x_{k+1}=x_k+d_k$) in Newton's algorithm statisfies the following equation:
+The increment ($x_{k+1}=x_k+d_k$) in Newton's algorithm satisfies the following equation:
 \begin{equation}
     \nabla^2 f(x_k) d_k = -\nabla f(x_k)
 \end{equation}
@@ -556,12 +556,12 @@ BFGS and the Davidon-Fletcher-Powell methods are example of such methods.
 
 This is a more advanced method for solving nonlinear least-squares problems.
 
-In Gauss-Newton's ($d_k$) method the step increment statisfies:
+In Gauss-Newton's ($d_k$) method the step increment satisfies:
 \begin{equation}
     (J_r^TJ_r)d_k = -J_r^Tr(x_k)
 \end{equation}
 
-To be computed we need to inverse $J_r^TJ_r$. The statibility of this inversion will depend on the \textbf{conditioning number} of the matrix (the ratio between the largest and the smallest eigenvalues).
+To be computed we need to inverse $J_r^TJ_r$. The stability of this inversion will depend on the \textbf{conditioning number} of the matrix (the ratio between the largest and the smallest eigenvalues).
 Levenberg-Marquardt adds a damping factor to avoid bad conditioning:
 \begin{equation}
     (J_r^TJ_r + \lambda I) d_k = J_r^T r(x_k)
