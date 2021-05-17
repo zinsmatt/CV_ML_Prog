@@ -913,9 +913,88 @@ A smart way to choose the initial two images to use is by trying to find a homog
 
 
 
+\section{Epipolar geometry}
+\subsection{Essential Matrix}
+
+The essential matrix points correspondences expressed in world units in the camera coordinates.
+
+\begin{equation}
+    X_2^T E X_1 = 0
+\end{equation}
+
+\begin{equation}
+    E = [t]_x R
+\end{equation}
+
+\begin{itemize}
+    \item Epipoles are the intersection of all epipolar lines.
+    \item They correspond to the intersection between the vector to the other camera and the image plane.
+    \item $Ee_1 = 0$ and $e_2^TE=0$.
+    \item The Essential matrix can be computed with the \textbf{5-points algorithm}. It is based on solving a polynomial of degree 10 and can thus have 10 possible solution. This method is advantageous when integrated inside a RANSAC because it requires less correspondences and thus is more likely to contain only inliers.
+\end{itemize}
+
+\paragraph{Recovering $R$ and $t$ from $E$}
+First $t$ is found as being the nullspace of $E$ and then $R$ is estimated (mainly done using SVD). This finally gives 4 possible solutions:
+\begin{itemize}
+    \item $[UWV^T \;|\; U[:,3]]$
+    \item $[UWV^T \;|\; -U[:,3]]$
+    \item $[UW^TV^T \;|\; U[:,3]]$
+    \item $[UW^TV^T \;|\; -U[:,3]]$
+\end{itemize}
+
+However some of them correspond to configuration where the 3D point is behind (cameras are looking backward). So, the correct solution can be determined by triangulating points for each solution and checking their $z$ coordinates.
 
 
 
+\subsection{Fundamental Matrix}
+
+The fundamental matrix relates corresponding points expressed in pixel coordinates from two images and encodes all the information between these two images (relative pose and intrinsics, $R$, $t$ and $K$).
+We have:
+\begin{equation}
+    \begin{split}
+        P_1=&K[I_ {3\times3}\;0] \\
+        P_2=&K[R\;t]
+    \end{split}
+\end{equation}
+and thus, $x_1 = K X_1$ and $x_2 = K X_2$.
+
+\begin{equation}
+\begin{split}
+    X_2^T E X_1 &= 0 \\
+    x_2^T K^{-T} E K^{-1} x_1 &= 0 \\
+    x_2^T F x_1 &= 0\\
+\end{split}
+\end{equation}
+where $F = K^{-T} E K^{-1}$.
+
+\begin{itemize}
+    \item $rank(F) = 2$, because $Fe=0$, where $e$ is the epipole.
+    \item degrees-of-freedom: $3\times 3-1=8$ (because of the scale factor).
+    \item 1 correspondence between points gives 1 equation. Thus, 8 corresponding points are required to estimate $F$.
+\end{itemize}
+
+\paragraph{Estimating $F$: 8-points algorithm} using $x_2^T F x_1=0$:
+\begin{equation}
+    [u_i^2 v_i^2 1] \left[\begin{array}{ccc}
+        f_{11} & f_{12} & f_{13} \\
+        f_{21} & f_{22} & f_{23} \\
+        f_{31} & f_{32} & f_{33} \\
+    \end{array} \right]
+    \left[\begin{array}{c}
+        u_i^1  \\
+        v_i^1 \\
+        1
+    \end{array}\right] = 0
+\end{equation}
+This equation is linear in $F$:
+\begin{equation}
+    u_i^1 u_i^2 f_{11} + u_i^1v_i^2 f_{21} + \dots = 0
+\end{equation}
+Just stack them to get the equation: $A f = 0$, where $f$ is the flattened version the $F$.
+This can be solved using the \textbf{SVD} of $A$. The solution is the vector of $Vt$ corresponding to the smallest singular value.
+Notice that this least-squares solution does not garantee the \textbf{rank(F)=2} constraint. To enforce it, we do a SVD decomposition of $F$ and set the last singular value (in matrix $S$) to zero.
+
+\paragraph{Epipolar lines} can be computed with $L_1 = F^T x2$ and $L_2 = F x_1$.
 
 
 
